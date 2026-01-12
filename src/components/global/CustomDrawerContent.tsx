@@ -13,6 +13,7 @@ import { Colors } from '../../constants/Colors';
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   const { navigation, state } = props;
+  const user = auth().currentUser;
 
   const currentRoute = state.routeNames[state.index];
 
@@ -58,7 +59,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
         <View style={styles.innerContainer}>
           <View style={styles.profileContainer}>
             <Image
-              source={{ uri: 'https://i.pravatar.cc/150' }}
+              source={
+                user?.photoURL
+                  ? { uri: user.photoURL }
+                  : { uri: 'https://i.pravatar.cc/150' }
+              }
               style={styles.profileImage}
             />
           </View>

@@ -1,7 +1,7 @@
 // App.tsx
 import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 import AuthNavigator from './src/navigation/AuthNavigator';
@@ -13,7 +13,16 @@ export default function App() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [idToken, setIdToken] = useState<string | null>(null);
-
+  const BlueTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: Colors.blue, // 🔵 Main blue color
+      background: Colors.blue,
+      card: Colors.white,
+      text: Colors.black,
+    },
+  };
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(async currentUser => {
       setUser(currentUser);
@@ -45,7 +54,7 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer theme={BlueTheme} ref={navigationRef}>
       {user ? <DrawerNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
