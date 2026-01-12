@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
     height: 140,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 20,
   },
   profileImage: {
     width: 100,
@@ -38,6 +39,17 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.gray,
     paddingBottom: 10,
     paddingHorizontal: 20,
+  },
+  userName: {
+    marginTop: 8,
+    fontWeight: '600',
+    color: Colors.black,
+  },
+
+  userEmail: {
+    marginTop: 2,
+    fontSize: 12,
+    color: Colors.gray,
   },
 });
 export default styles;
