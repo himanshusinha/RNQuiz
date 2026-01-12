@@ -33,5 +33,11 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontWeight: '600',
   },
+  logoutContainer: {
+    borderTopWidth: 0.5,
+    borderTopColor: Colors.gray,
+    paddingBottom: 10,
+    paddingHorizontal: 20,
+  },
 });
 export default styles;

@@ -9,7 +9,7 @@ import { isValidEmail } from '../../../utils/Validators';
 import { Colors } from '../../../constants/Colors';
 import GoogleIcon from '../../../assets/icons/google.png';
 import CustomAuthNav from '../../../components/global/CustomAuthNav';
-import { goBack } from '../../../utils/NavigationUtil';
+import { goBack, navigate } from '../../../utils/NavigationUtil';
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -104,6 +104,7 @@ const SignUpScreen: FC = () => {
         });
 
       console.log('✅ User created & data saved in Firestore');
+      navigate('Login'); // <-- Adjust this route name as per your AuthNavigator
 
       // 3️⃣ (Optional) Navigate to Home
       // resetAndNavigate('Home');
@@ -145,6 +146,7 @@ const SignUpScreen: FC = () => {
         leftIcon="person-outline"
         error={nameError}
         containerStyle={styles.input}
+        autoCapitalize="none"
       />
 
       {/* EMAIL */}
@@ -160,6 +162,7 @@ const SignUpScreen: FC = () => {
         keyboardType="email-address"
         error={emailError}
         containerStyle={styles.input}
+        autoCapitalize="none"
       />
 
       {/* PASSWORD */}
@@ -175,6 +178,7 @@ const SignUpScreen: FC = () => {
         secureTextEntry
         error={passwordError}
         containerStyle={styles.input}
+        autoCapitalize="none"
       />
 
       {/* CONFIRM PASSWORD */}
@@ -190,6 +194,7 @@ const SignUpScreen: FC = () => {
         secureTextEntry
         error={confirmPasswordError}
         containerStyle={styles.input}
+        autoCapitalize="none"
       />
 
       {/* SIGN UP BUTTON */}

@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image } from 'react-native';
 import {
   DrawerContentScrollView,
   DrawerItem,
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import auth from '@react-native-firebase/auth';
+
 import styles from './CustomDrawerContent.styles';
 import { Colors } from '../../constants/Colors';
 
@@ -38,25 +40,48 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
     );
   };
 
-  return (
-    <DrawerContentScrollView
-      {...props}
-      contentContainerStyle={styles.container}
-    >
-      <View style={styles.innerContainer}>
-        <View style={styles.profileContainer}>
-          <Image
-            source={{ uri: 'https://i.pravatar.cc/150' }}
-            style={styles.profileImage}
-          />
-        </View>
+  const onLogout = async () => {
+    try {
+      await auth().signOut();
+    } catch (error) {
+      console.log('Logout error:', error);
+    }
+  };
 
-        {renderDrawerItem('Home', 'Home', 'home')}
-        {renderDrawerItem('Bookmark', 'BookMark', 'bookmark')}
-        {renderDrawerItem('My Account', 'MyAccount', 'person')}
-        {renderDrawerItem('Rules', 'Rules', 'rule')}
+  return (
+    <View style={{ flex: 1 }}>
+      {/* Drawer content */}
+      <DrawerContentScrollView
+        {...props}
+        contentContainerStyle={styles.container}
+      >
+        <View style={styles.innerContainer}>
+          <View style={styles.profileContainer}>
+            <Image
+              source={{ uri: 'https://i.pravatar.cc/150' }}
+              style={styles.profileImage}
+            />
+          </View>
+
+          {renderDrawerItem('Home', 'Home', 'home')}
+          {renderDrawerItem('Bookmark', 'BookMark', 'bookmark')}
+          {renderDrawerItem('My Account', 'MyAccount', 'person')}
+          {renderDrawerItem('Rules', 'Rules', 'rule')}
+        </View>
+      </DrawerContentScrollView>
+
+      {/* Logout Button (Bottom) */}
+      <View style={styles.logoutContainer}>
+        <DrawerItem
+          label="Logout"
+          onPress={onLogout}
+          icon={({ size }) => (
+            <Icon name="logout" size={size} color={Colors.error} />
+          )}
+          labelStyle={{ color: Colors.error }}
+        />
       </View>
-    </DrawerContentScrollView>
+    </View>
   );
 };
 

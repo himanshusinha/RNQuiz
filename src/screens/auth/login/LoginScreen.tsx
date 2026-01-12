@@ -1,26 +1,38 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 
 import CustomText from '../../../components/global/CustomText';
 import CustomInput from '../../../components/global/CustomInput';
 import CustomButton from '../../../components/global/CustomButton';
+import SocialButtonHorizontal from '../../../components/global/SocialButtonHorizontal';
+import CustomAuthNav from '../../../components/global/CustomAuthNav';
+
 import styles from './styles';
 import { isValidEmail } from '../../../utils/Validators';
-import SocialButtonHorizontal from '../../../components/global/SocialButtonHorizontal';
 import { Colors } from '../../../constants/Colors';
 import GoogleIcon from '../../../assets/icons/google.png';
-import CustomAuthNav from '../../../components/global/CustomAuthNav';
-import { navigate } from '../../../utils/NavigationUtil';
 
 import auth, { GoogleAuthProvider } from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
+import { RootStackParamList } from '../../../types/types';
+
+type LoginScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'Login'
+>;
+
 const LoginScreen: FC = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [emailError, setEmailError] = useState<string>('');
-  const [passwordError, setPasswordError] = useState<string>('');
+  const navigation = useNavigation<LoginScreenNavigationProp>();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -31,7 +43,6 @@ const LoginScreen: FC = () => {
 
   const validate = (): boolean => {
     let valid = true;
-
     setEmailError('');
     setPasswordError('');
 
@@ -46,7 +57,7 @@ const LoginScreen: FC = () => {
     if (!password.trim()) {
       setPasswordError('Password is required');
       valid = false;
-    } else if (password.trim().length < 6) {
+    } else if (password.length < 6) {
       setPasswordError('Password must be at least 6 characters');
       valid = false;
     }
@@ -54,16 +65,51 @@ const LoginScreen: FC = () => {
     return valid;
   };
 
-  const onLogin = (): void => {
+  // 🔐 EMAIL LOGIN
+  const onLogin = async () => {
     if (!validate()) return;
 
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      const res = await auth().signInWithEmailAndPassword(
+        email.trim(),
+        password,
+      );
+
+      const uid = res.user.uid;
+
+      // 🔥 Firestore check
+      const userDoc = await firestore().collection('users').doc(uid).get();
+
+      if (!userDoc.exists) {
+        await auth().signOut();
+        Alert.alert('Error', 'User record not found. Please sign up.');
+        return;
+      }
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+    } catch (error: any) {
+      console.log('LOGIN ERROR:', error.code);
+
+      if (
+        error.code === 'auth/invalid-credential' ||
+        error.code === 'auth/wrong-password'
+      ) {
+        setPasswordError('Invalid email or password');
+      } else if (error.code === 'auth/user-not-found') {
+        setEmailError('User not found');
+      } else {
+        Alert.alert('Login failed', 'Something went wrong');
+      }
+    } finally {
       setLoading(false);
-      console.log('LOGIN DATA =>', email, password);
-    }, 1500);
+    }
   };
+
   const googleSignIn = async (): Promise<void> => {
     try {
       await GoogleSignin.hasPlayServices({
@@ -72,16 +118,42 @@ const LoginScreen: FC = () => {
 
       const userInfo = await GoogleSignin.signIn();
 
-      const idToken = userInfo.data?.idToken;
+      // ✅ CORRECT for latest SDK
+      if (!userInfo.data) {
+        throw new Error('No user data returned from Google');
+      }
+
+      const idToken = userInfo.data.idToken;
 
       if (!idToken) {
-        throw new Error('No ID token found');
+        throw new Error('No ID token returned from Google');
       }
 
       const googleCredential = GoogleAuthProvider.credential(idToken);
-      await auth().signInWithCredential(googleCredential);
+
+      const res = await auth().signInWithCredential(googleCredential);
+
+      const uid = res.user.uid;
+
+      const userRef = firestore().collection('users').doc(uid);
+      const doc = await userRef.get();
+
+      if (!doc.exists) {
+        await userRef.set({
+          uid,
+          email: res.user.email,
+          fullName: res.user.displayName,
+          provider: 'google',
+          createdAt: firestore.FieldValue.serverTimestamp(),
+        });
+      }
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
     } catch (error) {
-      console.error('Google Sign-In Error:', error);
+      console.log('GOOGLE SIGN-IN ERROR:', error);
     }
   };
 
@@ -98,28 +170,26 @@ const LoginScreen: FC = () => {
         label="Email"
         placeholder="Enter email"
         value={email}
-        onChangeText={(text: string) => {
+        onChangeText={text => {
           setEmail(text);
           if (emailError) setEmailError('');
         }}
-        leftIcon="mail-outline"
         keyboardType="email-address"
+        autoCapitalize="none"
         error={emailError}
-        containerStyle={styles.input}
       />
 
       <CustomInput
+        containerStyle={{ marginVertical: 10 }}
         label="Password"
         placeholder="Enter password"
         value={password}
-        onChangeText={(text: string) => {
+        onChangeText={text => {
           setPassword(text);
           if (passwordError) setPasswordError('');
         }}
-        leftIcon="lock-closed-outline"
         secureTextEntry
         error={passwordError}
-        containerStyle={styles.input}
       />
 
       <CustomButton
@@ -127,13 +197,12 @@ const LoginScreen: FC = () => {
         onPress={onLogin}
         loading={loading}
         disabled={loading}
-        containerStyle={styles.button}
       />
 
       <CustomAuthNav
         text="Don’t have an account?"
         actionText="Sign Up"
-        onPress={() => navigate('SignUp')}
+        onPress={() => navigation.navigate('SignUp')}
       />
 
       <SocialButtonHorizontal

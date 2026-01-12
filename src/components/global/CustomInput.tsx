@@ -26,7 +26,8 @@ interface Props {
   multiline?: boolean;
   numberOfLines?: number;
   editable?: boolean;
-  leftIcon?: string; // 👈 Ionicons name
+  leftIcon?: string;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters'; // **make optional**
 }
 
 const CustomInput: FC<Props> = ({
@@ -43,6 +44,7 @@ const CustomInput: FC<Props> = ({
   numberOfLines = 1,
   editable = true,
   leftIcon,
+  autoCapitalize = 'none', // **default value**
 }) => {
   const [focused, setFocused] = useState(false);
   const [hidePassword, setHidePassword] = useState(secureTextEntry);
@@ -62,7 +64,6 @@ const CustomInput: FC<Props> = ({
           error && styles.errorBorder,
         ]}
       >
-        {/* LEFT ICON */}
         {leftIcon && (
           <Ionicons
             name={leftIcon}
@@ -72,7 +73,6 @@ const CustomInput: FC<Props> = ({
           />
         )}
 
-        {/* INPUT */}
         <TextInput
           value={value}
           placeholder={placeholder}
@@ -83,12 +83,12 @@ const CustomInput: FC<Props> = ({
           multiline={multiline}
           numberOfLines={numberOfLines}
           editable={editable}
+          autoCapitalize={autoCapitalize}
           style={[styles.input, multiline && styles.multiline, inputStyle]}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
 
-        {/* RIGHT EYE ICON */}
         {secureTextEntry && (
           <TouchableOpacity
             onPress={() => setHidePassword(!hidePassword)}
@@ -111,6 +111,7 @@ const CustomInput: FC<Props> = ({
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   label: {
     marginBottom: 6,
