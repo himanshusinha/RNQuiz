@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, Alert } from 'react-native';
 import {
   DrawerContentScrollView,
   DrawerItem,
@@ -41,12 +41,29 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
     );
   };
 
-  const onLogout = async () => {
-    try {
-      await auth().signOut();
-    } catch (error) {
-      console.log('Logout error:', error);
-    }
+  const onLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Do you want to logout from app?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await auth().signOut();
+            } catch (error) {
+              console.log('Logout error:', error);
+            }
+          },
+        },
+      ],
+      { cancelable: true },
+    );
   };
 
   return (
