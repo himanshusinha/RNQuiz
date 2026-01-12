@@ -1,5 +1,6 @@
-import React, { FC, useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { FC, useEffect, useState } from 'react';
+import { Image, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+
 import CustomText from '../../../components/global/CustomText';
 import CustomInput from '../../../components/global/CustomInput';
 import CustomButton from '../../../components/global/CustomButton';
@@ -10,12 +11,23 @@ import { Colors } from '../../../constants/Colors';
 import GoogleIcon from '../../../assets/icons/google.png';
 import CustomAuthNav from '../../../components/global/CustomAuthNav';
 import { navigate } from '../../../utils/NavigationUtil';
+
+import auth, { GoogleAuthProvider } from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
 const LoginScreen: FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [emailError, setEmailError] = useState<string>('');
   const [passwordError, setPasswordError] = useState<string>('');
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '987643366374-bq7cjrf0347s9gpfko0gd5r4s61d5ico.apps.googleusercontent.com',
+    });
+  }, []);
 
   const validate = (): boolean => {
     let valid = true;
@@ -42,7 +54,7 @@ const LoginScreen: FC = () => {
     return valid;
   };
 
-  const onLogin = () => {
+  const onLogin = (): void => {
     if (!validate()) return;
 
     setLoading(true);
@@ -51,6 +63,26 @@ const LoginScreen: FC = () => {
       setLoading(false);
       console.log('LOGIN DATA =>', email, password);
     }, 1500);
+  };
+  const googleSignIn = async (): Promise<void> => {
+    try {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+
+      const userInfo = await GoogleSignin.signIn();
+
+      const idToken = userInfo.data?.idToken;
+
+      if (!idToken) {
+        throw new Error('No ID token found');
+      }
+
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+      await auth().signInWithCredential(googleCredential);
+    } catch (error) {
+      console.error('Google Sign-In Error:', error);
+    }
   };
 
   return (
@@ -66,7 +98,7 @@ const LoginScreen: FC = () => {
         label="Email"
         placeholder="Enter email"
         value={email}
-        onChangeText={text => {
+        onChangeText={(text: string) => {
           setEmail(text);
           if (emailError) setEmailError('');
         }}
@@ -80,7 +112,7 @@ const LoginScreen: FC = () => {
         label="Password"
         placeholder="Enter password"
         value={password}
-        onChangeText={text => {
+        onChangeText={(text: string) => {
           setPassword(text);
           if (passwordError) setPasswordError('');
         }}
@@ -97,14 +129,16 @@ const LoginScreen: FC = () => {
         disabled={loading}
         containerStyle={styles.button}
       />
+
       <CustomAuthNav
         text="Don’t have an account?"
         actionText="Sign Up"
         onPress={() => navigate('SignUp')}
       />
+
       <SocialButtonHorizontal
         icon={<Image source={GoogleIcon} style={styles.gimg} />}
-        onPress={() => {}}
+        onPress={googleSignIn}
         text="Continue with Google"
         textColor="#000"
         backgroundColor={Colors.white}

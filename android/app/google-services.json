@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "987643366374",
+    "project_id": "rnquizapp-98a71",
+    "storage_bucket": "rnquizapp-98a71.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987643366374:android:b43560ac7cc6d94edee427",
+        "android_client_info": {
+          "package_name": "com.rnquizapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "987643366374-i0gu48qq8hhvne7avo3j57h3nnan3q6a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rnquizapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "987643366374-bq7cjrf0347s9gpfko0gd5r4s61d5ico.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjedQtZpWk9zntMis9MrxSkf5NEHDerD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "987643366374-bq7cjrf0347s9gpfko0gd5r4s61d5ico.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "987643366374-3h71r8rfl6390tulrrvbmd9n6chm0l46.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rnquizapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
