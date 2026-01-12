@@ -13,13 +13,10 @@ const DrawerNavigator = () => {
     <Drawer.Navigator
       initialRouteName="Home"
       drawerContent={props => <CustomDrawerContent {...props} />}
-      screenOptions={{
-        headerShown: false,
-      }}
+      screenOptions={{ headerShown: false }}
     >
       <Drawer.Screen name="Home" component={HomeNavigator} />
       <Drawer.Screen name="BookMark" component={BookMarkScreen} />
-      <Drawer.Screen name="MyAccount" component={MyAccountScreen} />
       <Drawer.Screen name="Rules" component={RulesScreen} />
     </Drawer.Navigator>
   );

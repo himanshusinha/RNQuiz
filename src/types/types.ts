@@ -49,7 +49,10 @@ export interface CategoryCardProps {
 export type DrawerParamList = {
   Home: undefined;
   BookMark: undefined;
-  MyAccount: undefined;
   Rules: undefined;
   Score: undefined;
+};
+export type BottomTabParamList = {
+  Home: undefined;
+  Account: undefined;
 };

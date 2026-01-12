@@ -11,7 +11,6 @@ const ScoreScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <CustomHeader title="Score" navigation={navigation} showBack />
-
       <View style={styles.content}>
         <Text>Score</Text>
       </View>

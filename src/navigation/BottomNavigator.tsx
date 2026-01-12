@@ -3,8 +3,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { HomeScreen, MyAccountScreen } from '../screens';
 import { Colors } from '../constants/Colors';
+import { BottomTabParamList } from '../types/types';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 const BottomNavigator = () => {
   return (
@@ -28,8 +29,9 @@ const BottomNavigator = () => {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="MyAccount" component={MyAccountScreen} />
+      <Tab.Screen name="Account" component={MyAccountScreen} />
     </Tab.Navigator>
   );
 };
+
 export default BottomNavigator;

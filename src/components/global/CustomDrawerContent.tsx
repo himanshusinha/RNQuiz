@@ -7,10 +7,9 @@ import {
 } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import auth from '@react-native-firebase/auth';
-
 import styles from './CustomDrawerContent.styles';
 import { Colors } from '../../constants/Colors';
-import CustomText from '../../components/global/CustomText'; // 👈 agar use kar rahe ho
+import CustomText from '../../components/global/CustomText';
 import firestore from '@react-native-firebase/firestore';
 import UserIcon from '../../assets/icons/user.png';
 
@@ -107,15 +106,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
         <View style={styles.innerContainer}>
           <View style={styles.profileContainer}>
             <Image
-              source={
-                photoURL
-                  ? { uri: photoURL } // remote image
-                  : UserIcon // local image imported
-              }
+              source={photoURL ? { uri: photoURL } : UserIcon}
               style={styles.profileImage}
             />
 
-            {/* 👇 Name & Email */}
             <CustomText variant="h6" style={styles.userName}>
               {userName}
             </CustomText>
@@ -129,7 +123,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
 
           {renderDrawerItem('Home', 'Home', 'home')}
           {renderDrawerItem('Bookmark', 'BookMark', 'bookmark')}
-          {renderDrawerItem('My Account', 'MyAccount', 'person')}
           {renderDrawerItem('Rules', 'Rules', 'rule')}
         </View>
       </DrawerContentScrollView>

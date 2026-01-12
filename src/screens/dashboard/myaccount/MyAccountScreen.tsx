@@ -1,24 +1,17 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { DrawerScreenProps } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
-import CustomHeader from '../../../components/global/CustomHeader';
-import { DrawerParamList } from '../../../types/types';
+import { BottomTabParamList, DrawerParamList } from '../../../types/types';
 import styles from './styles';
 
-type NavigationProp = DrawerScreenProps<
-  DrawerParamList,
-  'MyAccount'
->['navigation'];
+type Props = DrawerScreenProps<BottomTabParamList, 'Account'>;
 
-const MyAccountScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();
-
+const MyAccountScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <CustomHeader title="My Account" navigation={navigation} showBack />
+      {/* Screen Content */}
       <View style={styles.content}>
-        <Text>MyAccount</Text>
+        <Text>My Account</Text>
       </View>
     </View>
   );

@@ -15,7 +15,7 @@ const RulesScreen: React.FC = () => {
     <View style={styles.container}>
       <CustomHeader title="Rules" navigation={navigation} showBack />
       <View style={styles.content}>
-        <Text>Rules</Text>
+        <Text>MyAccount</Text>
       </View>
     </View>
   );
