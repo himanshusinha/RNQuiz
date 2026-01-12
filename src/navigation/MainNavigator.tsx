@@ -5,8 +5,9 @@ import { BookMarkScreen, MyAccountScreen } from '../screens';
 import RulesScreen from '../screens/rules/RulesScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TouchableOpacity } from 'react-native';
+import { RootStackParamList } from '../types/types';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const MainStackNavigator = ({ navigation }: any) => {
   return (

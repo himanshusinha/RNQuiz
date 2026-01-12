@@ -87,11 +87,6 @@ const LoginScreen: FC = () => {
         Alert.alert('Error', 'User record not found. Please sign up.');
         return;
       }
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
     } catch (error: any) {
       console.log('LOGIN ERROR:', error.code);
 

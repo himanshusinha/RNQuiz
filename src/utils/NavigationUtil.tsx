@@ -8,19 +8,29 @@ import { RootStackParamList } from '../types/types';
 export const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 // ---------------- NAVIGATE ----------------
-export function navigate(routeName: keyof RootStackParamList) {
+export function navigate<RouteName extends keyof RootStackParamList>(
+  ...args: undefined extends RootStackParamList[RouteName]
+    ?
+        | [routeName: RouteName]
+        | [routeName: RouteName, params: RootStackParamList[RouteName]]
+    : [routeName: RouteName, params: RootStackParamList[RouteName]]
+) {
   if (navigationRef.isReady()) {
-    navigationRef.navigate(routeName);
+    // @ts-expect-error — React Navigation internal overload mismatch
+    navigationRef.navigate(...args);
   }
 }
 
 // ---------------- RESET ----------------
-export function resetAndNavigate(routeName: keyof RootStackParamList) {
+export function resetAndNavigate<RouteName extends keyof RootStackParamList>(
+  routeName: RouteName,
+  params?: RootStackParamList[RouteName],
+) {
   if (navigationRef.isReady()) {
     navigationRef.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{ name: routeName }],
+        routes: [{ name: routeName, params }],
       }),
     );
   }
@@ -34,8 +44,11 @@ export function goBack() {
 }
 
 // ---------------- PUSH ----------------
-export function push(routeName: keyof RootStackParamList) {
+export function push<RouteName extends keyof RootStackParamList>(
+  routeName: RouteName,
+  params?: RootStackParamList[RouteName],
+) {
   if (navigationRef.isReady()) {
-    navigationRef.dispatch(StackActions.push(routeName));
+    navigationRef.dispatch(StackActions.push(routeName, params));
   }
 }

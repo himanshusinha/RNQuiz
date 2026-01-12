@@ -17,7 +17,7 @@ export default function App() {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      primary: Colors.blue, // 🔵 Main blue color
+      primary: Colors.blue,
       background: Colors.blue,
       card: Colors.white,
       text: Colors.black,
@@ -31,9 +31,9 @@ export default function App() {
         try {
           const token = await currentUser.getIdToken();
           setIdToken(token);
-          console.log('✅ Firebase ID Token:', token);
+          console.log('Firebase ID Token:', token);
         } catch (err) {
-          console.error('❌ Error fetching ID token:', err);
+          console.error('Error fetching ID token:', err);
         }
       } else {
         setIdToken(null);
@@ -43,7 +43,7 @@ export default function App() {
     });
 
     return unsubscribe;
-  }, []); // ✅ EMPTY dependency
+  }, []);
 
   if (initializing) {
     return (
