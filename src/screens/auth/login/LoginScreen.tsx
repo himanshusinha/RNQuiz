@@ -65,7 +65,6 @@ const LoginScreen: FC = () => {
     return valid;
   };
 
-  // 🔐 EMAIL LOGIN
   const onLogin = async () => {
     if (!validate()) return;
 
@@ -76,12 +75,8 @@ const LoginScreen: FC = () => {
         email.trim(),
         password,
       );
-
       const uid = res.user.uid;
-
-      // 🔥 Firestore check
       const userDoc = await firestore().collection('users').doc(uid).get();
-
       if (!userDoc.exists) {
         await auth().signOut();
         Alert.alert('Error', 'User record not found. Please sign up.');
@@ -89,7 +84,6 @@ const LoginScreen: FC = () => {
       }
     } catch (error: any) {
       console.log('LOGIN ERROR:', error.code);
-
       if (
         error.code === 'auth/invalid-credential' ||
         error.code === 'auth/wrong-password'
@@ -112,27 +106,18 @@ const LoginScreen: FC = () => {
       });
 
       const userInfo = await GoogleSignin.signIn();
-
-      // ✅ CORRECT for latest SDK
       if (!userInfo.data) {
         throw new Error('No user data returned from Google');
       }
-
       const idToken = userInfo.data.idToken;
-
       if (!idToken) {
         throw new Error('No ID token returned from Google');
       }
-
       const googleCredential = GoogleAuthProvider.credential(idToken);
-
       const res = await auth().signInWithCredential(googleCredential);
-
       const uid = res.user.uid;
-
       const userRef = firestore().collection('users').doc(uid);
       const doc = await userRef.get();
-
       if (!doc.exists) {
         await userRef.set({
           uid,
@@ -142,11 +127,6 @@ const LoginScreen: FC = () => {
           createdAt: firestore.FieldValue.serverTimestamp(),
         });
       }
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
     } catch (error) {
       console.log('GOOGLE SIGN-IN ERROR:', error);
     }
