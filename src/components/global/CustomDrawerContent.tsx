@@ -6,34 +6,44 @@ import {
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import auth from '@react-native-firebase/auth';
+
+import { getApp } from '@react-native-firebase/app';
+import { getAuth } from '@react-native-firebase/auth';
+import { getFirestore } from '@react-native-firebase/firestore';
+
 import styles from './CustomDrawerContent.styles';
 import { Colors } from '../../constants/Colors';
 import CustomText from '../../components/global/CustomText';
-import firestore from '@react-native-firebase/firestore';
 import UserIcon from '../../assets/icons/user.png';
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   const { navigation, state } = props;
-  const [userName, setUserName] = useState<string>('');
-  const [userEmail, setUserEmail] = useState<string>('');
-  const [userId, setUserId] = useState<string>('');
+
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userId, setUserId] = useState('');
   const [photoURL, setPhotoURL] = useState<string | null>(null);
+
   const currentRoute = state.routeNames[state.index];
 
   useEffect(() => {
     const loadUser = async () => {
-      const user = auth().currentUser;
-      if (!user) return;
+      try {
+        const app = getApp();
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-      setUserEmail(user.email || '');
-      setPhotoURL(user.photoURL);
-      setUserId(user.uid);
-      if (user.displayName) {
-        setUserName(user.displayName);
-      } else {
-        try {
-          const doc = await firestore().collection('users').doc(user.uid).get();
+        const user = auth.currentUser;
+        if (!user) return;
+
+        setUserEmail(user.email ?? '');
+        setPhotoURL(user.photoURL ?? null);
+        setUserId(user.uid);
+
+        if (user.displayName) {
+          setUserName(user.displayName);
+        } else {
+          const doc = await db.collection('users').doc(user.uid).get();
 
           if (doc.exists()) {
             const data = doc.data();
@@ -41,10 +51,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
           } else {
             setUserName('User');
           }
-        } catch (error) {
-          console.log('Firestore user fetch error:', error);
-          setUserName('User');
         }
+      } catch (error) {
+        console.log('Drawer user load error:', error);
+        setUserName('User');
       }
     };
 
@@ -86,7 +96,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await auth().signOut();
+              const auth = getAuth(getApp());
+              await auth.signOut();
             } catch (error) {
               console.log('Logout error:', error);
             }
@@ -127,7 +138,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
         </View>
       </DrawerContentScrollView>
 
-      {/* 🚪 Logout */}
       <View style={styles.logoutContainer}>
         <DrawerItem
           label="Logout"

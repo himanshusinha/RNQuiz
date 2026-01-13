@@ -1,6 +1,6 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { BookMarkScreen, HomeScreen, MyAccountScreen } from '../screens';
+import { BookMarkScreen } from '../screens';
 import RulesScreen from '../screens/rules/RulesScreen';
 import CustomDrawerContent from '../components/global/CustomDrawerContent';
 import HomeNavigator from './HomeNavigator';

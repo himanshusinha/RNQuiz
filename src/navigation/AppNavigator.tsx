@@ -9,7 +9,6 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* Bottom Tabs ke upar Stack ka header OFF */}
         <Stack.Screen
           name="MainTabs"
           component={BottomNavigator}

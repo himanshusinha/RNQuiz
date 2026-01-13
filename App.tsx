@@ -17,8 +17,8 @@ export default function App() {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      primary: Colors.blue,
-      background: Colors.blue,
+      primary: Colors.white,
+      background: Colors.white,
       card: Colors.white,
       text: Colors.black,
     },

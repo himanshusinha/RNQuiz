@@ -1,16 +1,17 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { CategoriesItemProps } from '../../types/types';
 import CustomLineProgressBar from '../global/CustomLineProgressBar';
 import { Colors } from '../../constants/Colors';
+import { navigate } from '../../utils/NavigationUtil';
 
 const CategoriesItem: React.FC<CategoriesItemProps> = ({ item }) => {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity onPress={() => navigate('Questions')} style={styles.card}>
       <Text style={styles.title}>{item.title}</Text>
 
       <CustomLineProgressBar progress={item.progress} />
-    </View>
+    </TouchableOpacity>
   );
 };
 

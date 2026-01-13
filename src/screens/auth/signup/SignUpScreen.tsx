@@ -15,28 +15,25 @@ import {
   createUserWithEmailAndPassword,
 } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+
 const SignUpScreen: FC = () => {
   const [fullName, setFullName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-
   const [nameError, setNameError] = useState<string>('');
   const [emailError, setEmailError] = useState<string>('');
   const [passwordError, setPasswordError] = useState<string>('');
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>('');
 
-  // ---------------- VALIDATION ----------------
   const validate = (): boolean => {
     let valid = true;
-
     setNameError('');
     setEmailError('');
     setPasswordError('');
     setConfirmPasswordError('');
 
-    // Full name
     if (!fullName.trim()) {
       setNameError('Full name is required');
       valid = false;
@@ -45,7 +42,6 @@ const SignUpScreen: FC = () => {
       valid = false;
     }
 
-    // Email
     if (!email.trim()) {
       setEmailError('Email is required');
       valid = false;
@@ -54,7 +50,6 @@ const SignUpScreen: FC = () => {
       valid = false;
     }
 
-    // Password
     if (!password.trim()) {
       setPasswordError('Password is required');
       valid = false;
@@ -62,8 +57,6 @@ const SignUpScreen: FC = () => {
       setPasswordError('Password must be at least 6 characters');
       valid = false;
     }
-
-    // Confirm password
     if (!confirmPassword.trim()) {
       setConfirmPasswordError('Confirm password is required');
       valid = false;
@@ -75,14 +68,12 @@ const SignUpScreen: FC = () => {
     return valid;
   };
 
-  // ---------------- SIGN UP ----------------
   const onSignUp = async () => {
     if (!validate()) return;
-
     try {
       setLoading(true);
 
-      // 1️⃣ Create user with Firebase Auth
+      // Create the new user with email and password
       const userCredential = await createUserWithEmailAndPassword(
         getAuth(),
         email.trim(),
@@ -91,25 +82,34 @@ const SignUpScreen: FC = () => {
 
       const user = userCredential.user;
 
-      // 2️⃣ Save user data in Firestore
-      await firestore()
-        .collection('users')
-        .doc(user.uid) // 👈 UID as document ID (BEST PRACTICE)
-        .set({
-          uid: user.uid,
-          fullName: fullName.trim(),
-          email: email.trim(),
-          provider: 'email',
-          createdAt: firestore.FieldValue.serverTimestamp(),
-        });
+      // Save user data in Firestore
+      await firestore().collection('users').doc(user.uid).set({
+        uid: user.uid,
+        fullName: fullName.trim(),
+        email: email.trim(),
+        provider: 'email',
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        TOTAL_SCORE: 0,
+      });
 
-      console.log('✅ User created & data saved in Firestore');
-      navigate('Login'); // <-- Adjust this route name as per your AuthNavigator
+      // Increment the TOTAL_USERS field
+      const totalUsersDoc = firestore().collection('users').doc('TOTAL_USERS');
 
-      // 3️⃣ (Optional) Navigate to Home
-      // resetAndNavigate('Home');
+      await firestore().runTransaction(async transaction => {
+        const totalUsersDocSnapshot = await transaction.get(totalUsersDoc);
+
+        if (!totalUsersDocSnapshot.exists) {
+          // If the TOTAL_USERS document doesn't exist, create it with initial count 1
+          transaction.set(totalUsersDoc, { COUNT: 1 });
+        } else {
+          // If the document exists, increment the COUNT field
+          const currentCount = totalUsersDocSnapshot.data()?.COUNT || 0;
+          transaction.update(totalUsersDoc, { COUNT: currentCount + 1 });
+        }
+      });
+      console.log('User created & data saved in Firestore');
     } catch (error: any) {
-      console.log('❌ Signup error:', error);
+      console.log('Signup error:', error);
 
       if (error.code === 'auth/email-already-in-use') {
         setEmailError('Email already in use');
@@ -134,7 +134,6 @@ const SignUpScreen: FC = () => {
         Sign Up
       </CustomText>
 
-      {/* FULL NAME */}
       <CustomInput
         label="Full Name"
         placeholder="Enter full name"
@@ -149,7 +148,6 @@ const SignUpScreen: FC = () => {
         autoCapitalize="none"
       />
 
-      {/* EMAIL */}
       <CustomInput
         label="Email"
         placeholder="Enter email"
@@ -165,7 +163,6 @@ const SignUpScreen: FC = () => {
         autoCapitalize="none"
       />
 
-      {/* PASSWORD */}
       <CustomInput
         label="Password"
         placeholder="Enter password"
@@ -181,7 +178,6 @@ const SignUpScreen: FC = () => {
         autoCapitalize="none"
       />
 
-      {/* CONFIRM PASSWORD */}
       <CustomInput
         label="Confirm Password"
         placeholder="Re-enter password"
@@ -197,7 +193,6 @@ const SignUpScreen: FC = () => {
         autoCapitalize="none"
       />
 
-      {/* SIGN UP BUTTON */}
       <CustomButton
         title="Create Account"
         onPress={onSignUp}
@@ -210,7 +205,6 @@ const SignUpScreen: FC = () => {
         actionText="Login"
         onPress={() => goBack()}
       />
-      {/* SOCIAL */}
       <SocialButtonHorizontal
         icon={<Image source={GoogleIcon} style={styles.gimg} />}
         onPress={() => console.log('Google Signup')}

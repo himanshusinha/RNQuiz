@@ -1,18 +1,22 @@
-// components/CategoryCard.tsx
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
 import styles from './CategoryCard.styles';
-import { CategoryCardProps } from '../../types/types';
+type Category = {
+  id: string;
+  name: string;
+  noOfTests: number;
+};
 
-const CategoryCard: React.FC<CategoryCardProps> = ({ item, onPress }) => {
+type Props = {
+  item: Category;
+  onPress: () => void;
+};
+
+const CategoryCard: React.FC<Props> = ({ item, onPress }) => {
   return (
-    <TouchableOpacity
-      style={styles.card}
-      activeOpacity={0.8}
-      onPress={() => onPress(item)}
-    >
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.count}>{item.count}</Text>
+    <TouchableOpacity style={styles.card} activeOpacity={0.8} onPress={onPress}>
+      <Text style={styles.title}>{item.name}</Text>
+      <Text style={styles.count}>{item.noOfTests}</Text>
     </TouchableOpacity>
   );
 };

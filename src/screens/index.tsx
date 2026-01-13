@@ -5,3 +5,4 @@ export { default as BookMarkScreen } from '../screens/dashboard/bookmark/BookMar
 export { default as HomeScreen } from '../screens/dashboard/home/HomeScreen';
 export { default as MyAccountScreen } from '../screens/dashboard/myaccount/MyAccountScreen';
 export { default as ScoreScreen } from '../screens/dashboard/score/ScoreScreen';
+export { default as QuestionsScreen } from '../screens/dashboard/questions/QuestionsScreen';
