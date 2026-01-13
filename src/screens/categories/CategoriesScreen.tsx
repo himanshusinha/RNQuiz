@@ -14,9 +14,10 @@ type CategoriesRouteProp = RouteProp<RootStackParamList, 'Categories'>;
 const CategoriesScreen: React.FC = () => {
   const route = useRoute<CategoriesRouteProp>();
   const { category } = route.params;
-
+  console.log(category.noOfTests);
   const [tests, setTests] = useState<TestItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [noOfTests, setNoOfTests] = useState();
 
   useEffect(() => {
     const fetchTests = async () => {
@@ -30,16 +31,17 @@ const CategoriesScreen: React.FC = () => {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-
           const list: TestItem[] = [];
 
           for (let i = 1; i <= category.noOfTests; i++) {
             list.push({
-              id: data?.[`TEST${i}_ID`],
+              id: data?.[`TEST${i}_ID`] ?? `TEST${i}`, // ✅ safe fallback
               title: `Test No : ${i}`,
               progress: 0,
+              testNumber: i, // ✅ IMPORTANT
             });
           }
+
           setTests(list);
         }
       } catch (error) {
@@ -50,7 +52,7 @@ const CategoriesScreen: React.FC = () => {
     };
 
     fetchTests();
-  }, []);
+  }, [category.id, category.noOfTests]);
 
   if (loading) {
     return <ActivityIndicator size="large" color={Colors.blue} />;
@@ -61,7 +63,9 @@ const CategoriesScreen: React.FC = () => {
       <FlatList
         data={tests}
         keyExtractor={item => item.id}
-        renderItem={({ item }) => <CategoriesItem item={item} />}
+        renderItem={({ item }) => (
+          <CategoriesItem item={item} category={category} />
+        )}
         showsVerticalScrollIndicator={false}
       />
     </View>

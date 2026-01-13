@@ -6,3 +6,4 @@ export { default as HomeScreen } from '../screens/dashboard/home/HomeScreen';
 export { default as MyAccountScreen } from '../screens/dashboard/myaccount/MyAccountScreen';
 export { default as ScoreScreen } from '../screens/dashboard/score/ScoreScreen';
 export { default as QuestionsScreen } from '../screens/dashboard/questions/QuestionsScreen';
+export { default as StartScreen } from '../screens/dashboard/start/StartScreen';

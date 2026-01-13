@@ -1,59 +1,98 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import styles from './styles';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomHeader from '../../../components/global/CustomHeader';
-import { useNavigation } from '@react-navigation/native';
+import styles from './styles';
+import { Colors } from '../../../constants/Colors';
+import { Question } from '../../../types/types';
 
-const QuizScreen = () => {
-  const navigation = useNavigation();
+const QuestionsScreen = ({ route }: any) => {
+  const { categoryId } = route.params;
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const snapshot = await firestore()
+          .collection('Questions')
+          .where('CATEGORY', '==', categoryId)
+          .get();
+
+        const list: Question[] = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...(doc.data() as Omit<Question, 'id'>),
+        }));
+
+        setQuestions(list);
+      } catch (e) {
+        console.log('Question fetch error:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, [categoryId]);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" color={Colors.blue} />
+      </SafeAreaView>
+    );
+  }
+
+  const question = questions[currentIndex];
+  const options = [question.A, question.B, question.C, question.D];
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 🔵 Quiz Top Bar */}
       <View style={styles.topHeader}>
-        <Text style={styles.count}>1/25</Text>
+        <Text style={styles.count}>
+          {currentIndex + 1}/{questions.length}
+        </Text>
         <Text style={styles.timer}>20 : 15 min</Text>
-
         <TouchableOpacity style={styles.submitBtn}>
           <Text style={styles.submitText}>SUBMIT</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Subject */}
       <View style={styles.subjectBar}>
         <Text style={styles.subjectText}>GK</Text>
       </View>
 
-      {/* Content */}
       <View style={styles.content}>
-        <View
-          style={{
-            width: '100%',
-            backgroundColor: 'white',
-            height: 180,
-            marginBottom: 20,
-          }}
-        >
-          <Text style={styles.question}>
-            Who is the Prime Minister of India?
-          </Text>
+        <View style={styles.questionBox}>
+          <Text style={styles.question}>{question.QUESTION}</Text>
         </View>
-        {['Narendra Modi', 'Rahul Gandhi', 'Amit Shah', 'Arvind Kejriwal'].map(
-          (opt, index) => (
-            <TouchableOpacity key={index} style={styles.option}>
-              <View style={styles.radio} />
-              <Text style={styles.optionText}>{opt}</Text>
-            </TouchableOpacity>
-          ),
-        )}
+
+        {options.map((opt, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[styles.option, selected === opt && styles.selectedOption]}
+            onPress={() => setSelected(opt)}
+          >
+            <View style={styles.radio} />
+            <Text style={styles.optionText}>{opt}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       {/* Bottom Bar */}
       <View style={styles.bottomBar}>
-        <Text style={styles.navText}>{'<'}</Text>
+        <TouchableOpacity
+          onPress={() => currentIndex > 0 && setCurrentIndex(i => i - 1)}
+        >
+          <Text style={styles.navText}>{'<'}</Text>
+        </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionBtn}>
+        <TouchableOpacity
+          style={styles.actionBtn}
+          onPress={() => setSelected(null)}
+        >
           <Text style={styles.actionText}>CLEAR SELECTION</Text>
         </TouchableOpacity>
 
@@ -61,9 +100,16 @@ const QuizScreen = () => {
           <Text style={styles.actionText}>MARK FOR REVIEW</Text>
         </TouchableOpacity>
 
-        <Text style={styles.navText}>{'>'}</Text>
+        <TouchableOpacity
+          onPress={() =>
+            currentIndex < questions.length - 1 && setCurrentIndex(i => i + 1)
+          }
+        >
+          <Text style={styles.navText}>{'>'}</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
-export default QuizScreen;
+
+export default QuestionsScreen;

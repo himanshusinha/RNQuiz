@@ -22,7 +22,6 @@ const HomeScreen: React.FC = () => {
             name: doc.data().NAME,
             noOfTests: doc.data().NO_OF_TESTS,
           }));
-
         setCategories(list);
       } catch (error) {
         console.log('Error fetching categories:', error);

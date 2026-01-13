@@ -51,18 +51,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 14,
     borderRadius: 10,
+    padding: 14,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
 
-  radio: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 2,
+  /* ✅ Selected option highlight */
+  selectedOption: {
+    backgroundColor: '#E8F1FF',
     borderColor: Colors.blue,
-    marginRight: 12,
+  },
+
+  /* ✅ Filled radio when selected */
+  radioSelected: {
+    backgroundColor: Colors.blue,
   },
 
   optionText: { fontSize: 14 },
@@ -94,6 +98,28 @@ const styles = StyleSheet.create({
   actionText: {
     color: '#fff',
     fontSize: 12,
+  },
+  questionBox: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    elevation: 3, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  radio: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: Colors.blue,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
 });
 export default styles;

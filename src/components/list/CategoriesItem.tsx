@@ -2,14 +2,28 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { CategoriesItemProps } from '../../types/types';
 import CustomLineProgressBar from '../global/CustomLineProgressBar';
-import { Colors } from '../../constants/Colors';
 import { navigate } from '../../utils/NavigationUtil';
 
-const CategoriesItem: React.FC<CategoriesItemProps> = ({ item }) => {
+const CategoriesItem: React.FC<CategoriesItemProps> = ({ item, category }) => {
   return (
-    <TouchableOpacity onPress={() => navigate('Questions')} style={styles.card}>
-      <Text style={styles.title}>{item.title}</Text>
+    <TouchableOpacity
+      onPress={() => {
+        console.log('Navigating to Start with:', {
+          category,
+          testId: item.id,
+          testTitle: item.title,
+        });
 
+        navigate('Start', {
+          category, // 👈 category ke andar noOfTests already hai
+          testId: item.id,
+          testTitle: item.title,
+          testNumber: item.testNumber,
+        });
+      }}
+      style={styles.card}
+    >
+      <Text style={styles.title}>{item.title}</Text>
       <CustomLineProgressBar progress={item.progress} />
     </TouchableOpacity>
   );
