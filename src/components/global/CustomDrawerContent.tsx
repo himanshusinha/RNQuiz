@@ -20,6 +20,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   const { navigation, state } = props;
 
   const [userName, setUserName] = useState('');
+  console.log(userName);
   const [userEmail, setUserEmail] = useState('');
   const [userId, setUserId] = useState('');
   const [photoURL, setPhotoURL] = useState<string | null>(null);

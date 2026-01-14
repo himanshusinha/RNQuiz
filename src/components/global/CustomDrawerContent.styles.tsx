@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   focusedItem: {
-    backgroundColor: Colors.blue,
+    backgroundColor: Colors.darkBlue,
   },
   label: {
     color: Colors.black,

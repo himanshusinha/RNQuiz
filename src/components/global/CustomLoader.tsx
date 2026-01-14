@@ -14,7 +14,7 @@ const CustomLoader: React.FC<CustomLoaderProps> = ({ visible }) => (
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.loading}>
-          <ActivityIndicator size="large" color={Colors.blue} />
+          <ActivityIndicator size="large" color={Colors.darkBlue} />
           <Text style={styles.loadingText}>Please Wait .....</Text>
         </View>
       </View>

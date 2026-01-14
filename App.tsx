@@ -48,7 +48,6 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-  /* 🔥 ONLY CUSTOM LOADER */
   if (initializing) {
     return <CustomLoader visible={true} />;
   }

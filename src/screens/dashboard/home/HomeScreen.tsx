@@ -22,6 +22,7 @@ const HomeScreen: React.FC = () => {
             id: doc.id,
             name: doc.data().NAME,
             noOfTests: doc.data().NO_OF_TESTS,
+            categoryName: doc.data.name,
           }));
 
         setCategories(list);

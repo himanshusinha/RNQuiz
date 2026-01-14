@@ -1,31 +1,36 @@
 import { StyleSheet } from 'react-native';
+import { Colors } from '../../../constants/Colors';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F6FA',
+    backgroundColor: Colors.white,
     justifyContent: 'space-between',
   },
 
   header: {
-    height: 200,
-    backgroundColor: '#0A66FF',
+    height: 150,
+    backgroundColor: Colors.darkBlue,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 16,
   },
 
   headerTitle: {
-    color: '#fff',
+    flex: 1,
+    textAlign: 'center',
+    color: Colors.white,
     fontSize: 22,
     fontWeight: '600',
+    marginTop: 20,
   },
 
   card: {
-    marginTop: -60,
+    marginBottom: 60,
     marginHorizontal: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#FAF9F6',
     borderRadius: 20,
     padding: 20,
     elevation: 5,
@@ -35,25 +40,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: 20,
+    marginVertical: 20,
   },
 
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 25,
   },
 
   statBox: {
     alignItems: 'center',
     flex: 1,
-    margin: 10,
   },
 
   statValue: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#0A66FF',
+    color: Colors.darkBlue,
   },
 
   statLabel: {
@@ -62,12 +65,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
+  /* 🔥 FIXED START BUTTON */
   startBtn: {
-    backgroundColor: '#0A66FF',
+    backgroundColor: Colors.darkBlue, // ✅ REQUIRED
     paddingVertical: 14,
     borderRadius: 30,
     alignItems: 'center',
     marginHorizontal: 20,
+    marginBottom: 24, // ✅ instead of bottom
   },
 
   startText: {
@@ -76,4 +81,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
 export default styles;

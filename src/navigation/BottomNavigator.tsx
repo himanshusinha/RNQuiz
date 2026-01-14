@@ -12,7 +12,7 @@ const BottomNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: Colors.blue,
+        tabBarActiveTintColor: Colors.darkBlue,
         tabBarInactiveTintColor: Colors.gray,
         tabBarIcon: ({ focused, color, size }) => {
           const iconName =

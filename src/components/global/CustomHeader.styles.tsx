@@ -5,7 +5,7 @@ const HEADER_HEIGHT = 56;
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: Colors.blue,
+    backgroundColor: Colors.darkBlue,
   },
 
   container: {
@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    backgroundColor: Colors.blue,
+    backgroundColor: Colors.darkBlue,
 
     // ANDROID
     elevation: 4,
