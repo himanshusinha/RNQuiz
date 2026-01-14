@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, ActivityIndicator } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 
-import styles from './styles';
 import CategoriesItem from '../../components/list/CategoriesItem';
-import { RootStackParamList } from '../../types/types';
-import { Colors } from '../../constants/Colors';
-import { TestItem } from '../../types/types';
+import { RootStackParamList, TestItem } from '../../types/types';
+import styles from './styles';
+import CustomLoader from '../../components/global/CustomLoader';
 
 type CategoriesRouteProp = RouteProp<RootStackParamList, 'Categories'>;
 
 const CategoriesScreen: React.FC = () => {
   const route = useRoute<CategoriesRouteProp>();
   const { category } = route.params;
-  console.log(category.noOfTests);
+
   const [tests, setTests] = useState<TestItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [noOfTests, setNoOfTests] = useState();
 
   useEffect(() => {
     const fetchTests = async () => {
@@ -29,21 +27,35 @@ const CategoriesScreen: React.FC = () => {
           .doc('TEST_INFO')
           .get();
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const list: TestItem[] = [];
+        if (!docSnap.exists()) return;
 
-          for (let i = 1; i <= category.noOfTests; i++) {
-            list.push({
-              id: data?.[`TEST${i}_ID`] ?? `TEST${i}`, // ✅ safe fallback
-              title: `Test No : ${i}`,
-              progress: 0,
-              testNumber: i, // ✅ IMPORTANT
-            });
+        const data = docSnap.data();
+        const list: TestItem[] = [];
+
+        for (let i = 1; i <= category.noOfTests; i++) {
+          const testId = data?.[`TEST${i}_ID`];
+          let questionCount = 0;
+
+          if (testId) {
+            const qSnap = await firestore()
+              .collection('Questions')
+              .where('CATEGORY', '==', category.id)
+              .where('TEST', '==', testId)
+              .get();
+
+            questionCount = qSnap.size;
           }
 
-          setTests(list);
+          list.push({
+            id: testId ?? `TEST${i}`,
+            title: `Test No : ${i}`,
+            progress: 0,
+            testNumber: i,
+            questionCount,
+          });
         }
+
+        setTests(list);
       } catch (error) {
         console.log('Error fetching tests:', error);
       } finally {
@@ -54,12 +66,10 @@ const CategoriesScreen: React.FC = () => {
     fetchTests();
   }, [category.id, category.noOfTests]);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color={Colors.blue} />;
-  }
-
   return (
     <View style={styles.container}>
+      {loading && <CustomLoader visible={true} />}
+
       <FlatList
         data={tests}
         keyExtractor={item => item.id}

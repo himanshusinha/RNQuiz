@@ -15,6 +15,7 @@ import {
   createUserWithEmailAndPassword,
 } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import CustomLoader from '../../../components/global/CustomLoader';
 
 const SignUpScreen: FC = () => {
   const [fullName, setFullName] = useState<string>('');
@@ -130,6 +131,8 @@ const SignUpScreen: FC = () => {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      {loading && <CustomLoader visible={loading} />}
+
       <CustomText variant="h2" style={styles.title}>
         Sign Up
       </CustomText>

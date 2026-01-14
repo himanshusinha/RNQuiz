@@ -1,7 +1,4 @@
-/* =========================
-   🔹 NAVIGATION TYPES
-========================= */
-
+//NAVIGATION TYPES
 export type RootStackParamList = {
   Home: undefined;
 
@@ -28,10 +25,7 @@ export type RootStackParamList = {
   SignUp: undefined;
 };
 
-/* =========================
-   🔹 DRAWER
-========================= */
-
+// DRAWER
 export type DrawerParamList = {
   Home: undefined;
   BookMark: undefined;
@@ -39,31 +33,24 @@ export type DrawerParamList = {
   Score: undefined;
 };
 
-/* =========================
-   🔹 BOTTOM TAB
-========================= */
-
+//  BOTTOM TAB
 export type BottomTabParamList = {
   Home: undefined;
   Account: undefined;
 };
 
-/* =========================
-   🔹 FIREBASE MODELS
-========================= */
-
+//FIREBASE MODELS
 export interface Category {
   id: string;
   name: string;
   noOfTests: number;
-  testNumber: number;
 }
-
 export type TestItem = {
   id: string;
   title: string;
   progress: number;
-  testNumber: number; // ✅ ADD THIS
+  testNumber: number;
+  questionCount: number;
 };
 
 export type Question = {
@@ -78,10 +65,7 @@ export type Question = {
   TEST: string;
 };
 
-/* =========================
-   🔹 COMPONENT PROPS
-========================= */
-
+//COMPONENT PROPS
 export interface CategoryCardProps {
   item: Category;
   onPress: () => void;
@@ -92,10 +76,7 @@ export interface CategoriesItemProps {
   category: Category;
 }
 
-/* =========================
-   🔹 CUSTOM HEADER
-========================= */
-
+// CUSTOM HEADER
 export type CustomHeaderProps = {
   title: string;
   navigation: {

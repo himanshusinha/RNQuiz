@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, ActivityIndicator } from 'react-native';
+import { View, FlatList } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import CategoryCard from '../../../components/list/CategoryCard';
 import { navigate } from '../../../utils/NavigationUtil';
-import { Colors } from '../../../constants/Colors';
 import { Category } from '../../../types/types';
 import styles from './styles';
+import CustomLoader from '../../../components/global/CustomLoader';
 
 const HomeScreen: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -15,6 +15,7 @@ const HomeScreen: React.FC = () => {
     const fetchCategories = async () => {
       try {
         const snapshot = await firestore().collection('QUIZ').get();
+
         const list: Category[] = snapshot.docs
           .filter(doc => doc.id !== 'Categories')
           .map(doc => ({
@@ -22,6 +23,7 @@ const HomeScreen: React.FC = () => {
             name: doc.data().NAME,
             noOfTests: doc.data().NO_OF_TESTS,
           }));
+
         setCategories(list);
       } catch (error) {
         console.log('Error fetching categories:', error);
@@ -33,15 +35,12 @@ const HomeScreen: React.FC = () => {
     fetchCategories();
   }, []);
 
-  // ✅ Loader
+  /* 🔥 ONLY LOADER */
   if (loading) {
-    return (
-      <View>
-        <ActivityIndicator size="large" color={Colors.blue} />
-      </View>
-    );
+    return <CustomLoader visible={true} />;
   }
 
+  /* 🔥 MAIN UI */
   return (
     <View style={styles.container}>
       <FlatList

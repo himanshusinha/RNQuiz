@@ -3,28 +3,35 @@ import React from 'react';
 import { CategoriesItemProps } from '../../types/types';
 import CustomLineProgressBar from '../global/CustomLineProgressBar';
 import { navigate } from '../../utils/NavigationUtil';
-
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Colors } from '../../constants/Colors';
 const CategoriesItem: React.FC<CategoriesItemProps> = ({ item, category }) => {
+  const isLocked = item.questionCount === 0;
+
   return (
     <TouchableOpacity
-      onPress={() => {
-        console.log('Navigating to Start with:', {
+      disabled={isLocked}
+      onPress={() =>
+        navigate('Start', {
           category,
           testId: item.id,
           testTitle: item.title,
-        });
-
-        navigate('Start', {
-          category, // 👈 category ke andar noOfTests already hai
-          testId: item.id,
-          testTitle: item.title,
           testNumber: item.testNumber,
-        });
-      }}
-      style={styles.card}
+        })
+      }
+      style={[styles.card, isLocked && { opacity: 0.5 }]}
     >
       <Text style={styles.title}>{item.title}</Text>
+
+      <Text style={styles.countText}>{item.questionCount} Questions</Text>
+
       <CustomLineProgressBar progress={item.progress} />
+
+      {isLocked && (
+        <View style={styles.lockIcon}>
+          <MaterialIcons name="lock" size={22} color={Colors.gray} />
+        </View>
+      )}
     </TouchableOpacity>
   );
 };
@@ -32,21 +39,21 @@ const CategoriesItem: React.FC<CategoriesItemProps> = ({ item, category }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FA', // screen background
+    backgroundColor: '#F5F7FA',
     padding: 16,
   },
 
   card: {
-    backgroundColor: '#FFFFFF', // ✅ MUST be white
+    backgroundColor: Colors.white,
     paddingVertical: 18,
     paddingHorizontal: 12,
     borderRadius: 12,
     marginBottom: 16,
 
-    // ✅ Android shadow
+    // Android shadow
     elevation: 6,
 
-    // ✅ iOS shadow
+    // iOS shadow
     shadowColor: '#000',
     shadowOpacity: 0.12,
     shadowRadius: 8,
@@ -58,7 +65,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 10,
-    color: '#222',
+    color: Colors.black,
+  },
+  countText: {
+    textAlign: 'center',
+    fontSize: 13,
+    color: Colors.gray,
+    marginBottom: 6,
+  },
+
+  lockIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
 });
 

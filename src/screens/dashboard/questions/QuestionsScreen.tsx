@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './styles';
@@ -7,7 +13,7 @@ import { Colors } from '../../../constants/Colors';
 import { Question } from '../../../types/types';
 
 const QuestionsScreen = ({ route }: any) => {
-  const { categoryId } = route.params;
+  const { categoryId, testId, time } = route.params;
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
@@ -19,6 +25,7 @@ const QuestionsScreen = ({ route }: any) => {
         const snapshot = await firestore()
           .collection('Questions')
           .where('CATEGORY', '==', categoryId)
+          .where('TEST', '==', testId)
           .get();
 
         const list: Question[] = snapshot.docs.map(doc => ({
@@ -35,7 +42,7 @@ const QuestionsScreen = ({ route }: any) => {
     };
 
     fetchQuestions();
-  }, [categoryId]);
+  }, [categoryId, testId]);
 
   if (loading) {
     return (
@@ -45,8 +52,20 @@ const QuestionsScreen = ({ route }: any) => {
     );
   }
 
+  if (!questions.length || !questions[currentIndex]) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={{ textAlign: 'center', marginTop: 40 }}>
+          No questions found
+        </Text>
+      </SafeAreaView>
+    );
+  }
+
   const question = questions[currentIndex];
-  const options = [question.A, question.B, question.C, question.D];
+  const options = [question.A, question.B, question.C, question.D].filter(
+    Boolean,
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -54,7 +73,9 @@ const QuestionsScreen = ({ route }: any) => {
         <Text style={styles.count}>
           {currentIndex + 1}/{questions.length}
         </Text>
-        <Text style={styles.timer}>20 : 15 min</Text>
+
+        <Text style={styles.timer}>{time} min</Text>
+
         <TouchableOpacity style={styles.submitBtn}>
           <Text style={styles.submitText}>SUBMIT</Text>
         </TouchableOpacity>
@@ -64,27 +85,34 @@ const QuestionsScreen = ({ route }: any) => {
         <Text style={styles.subjectText}>GK</Text>
       </View>
 
-      <View style={styles.content}>
-        <View style={styles.questionBox}>
-          <Text style={styles.question}>{question.QUESTION}</Text>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 120 }}
+      >
+        <View style={styles.content}>
+          <View style={styles.questionBox}>
+            <Text style={styles.question}>{question.QUESTION}</Text>
+          </View>
+
+          {options.map((opt, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.option, selected === opt && styles.selectedOption]}
+              onPress={() => setSelected(opt)}
+            >
+              <Text style={styles.optionText}>{opt}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
+      </ScrollView>
 
-        {options.map((opt, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.option, selected === opt && styles.selectedOption]}
-            onPress={() => setSelected(opt)}
-          >
-            <View style={styles.radio} />
-            <Text style={styles.optionText}>{opt}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Bottom Bar */}
       <View style={styles.bottomBar}>
         <TouchableOpacity
-          onPress={() => currentIndex > 0 && setCurrentIndex(i => i - 1)}
+          disabled={currentIndex === 0}
+          onPress={() => {
+            setSelected(null);
+            setCurrentIndex(prev => prev - 1);
+          }}
         >
           <Text style={styles.navText}>{'<'}</Text>
         </TouchableOpacity>
@@ -93,17 +121,19 @@ const QuestionsScreen = ({ route }: any) => {
           style={styles.actionBtn}
           onPress={() => setSelected(null)}
         >
-          <Text style={styles.actionText}>CLEAR SELECTION</Text>
+          <Text style={styles.actionText}>CLEAR</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionBtn}>
-          <Text style={styles.actionText}>MARK FOR REVIEW</Text>
+          <Text style={styles.actionText}>MARK</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() =>
-            currentIndex < questions.length - 1 && setCurrentIndex(i => i + 1)
-          }
+          disabled={currentIndex === questions.length - 1}
+          onPress={() => {
+            setSelected(null);
+            setCurrentIndex(prev => prev + 1);
+          }}
         >
           <Text style={styles.navText}>{'>'}</Text>
         </TouchableOpacity>

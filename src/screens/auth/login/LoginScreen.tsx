@@ -19,6 +19,7 @@ import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import { RootStackParamList } from '../../../types/types';
+import CustomLoader from '../../../components/global/CustomLoader';
 
 type LoginScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -137,6 +138,8 @@ const LoginScreen: FC = () => {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      {loading && <CustomLoader visible={loading} />}
+
       <CustomText variant="h2" style={styles.title}>
         Login
       </CustomText>
