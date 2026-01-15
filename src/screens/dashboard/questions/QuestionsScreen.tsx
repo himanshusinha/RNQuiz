@@ -28,7 +28,8 @@ const { width } = Dimensions.get('window');
 
 const QuestionsScreen = ({ route }: any) => {
   const { categoryId, testId, time, categoryName } = route.params;
-
+  const category = route.params?.category;
+  const testNumber = route.params?.testNumber;
   const [questions, setQuestions] = useState<QuestionWithAnswer[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -176,8 +177,12 @@ const QuestionsScreen = ({ route }: any) => {
     setExitDialogVisible(false);
 
     navigate('Score', {
-      ...result,
-      timeTaken: formatTime(remainingTime), // 👈 SAME TIME
+      score: result.score,
+      totalQuestions: result.totalQuestions,
+      correct: result.correct,
+      wrong: result.wrong,
+      unAttempted: result.unAttempted,
+      timeTaken: formatTime(remainingTime), // ✅ SAME TIME
     });
   };
 

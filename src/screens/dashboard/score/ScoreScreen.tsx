@@ -45,7 +45,7 @@ const ScoreScreen = ({ route, navigation }: any) => {
       {/* Stats */}
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
-          <Icon name="checkmark-circle" size={22} color={Colors.green} />
+          <Icon name="checkmark-circle" size={22} color="#4CAF50" />
           <Text style={styles.statLabel}>Correct</Text>
           <Text style={[styles.statValue, { color: Colors.green }]}>
             {correct}

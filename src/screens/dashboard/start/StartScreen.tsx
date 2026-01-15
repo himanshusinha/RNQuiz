@@ -10,63 +10,57 @@ import CustomButton from '../../../components/global/CustomButton';
 import TestInfoCard from '../../../components/quiz/TestInfoCard';
 
 const StartScreen = ({ route }: any) => {
-  const { category, testNumber } = route.params;
-  console.log(category.name);
+  const category = route.params?.category;
+  const testNumber = route.params?.testNumber;
+  const currentTestNo = Number(testNumber);
+
+  const [loading, setLoading] = useState(true);
   const [testInfo, setTestInfo] = useState<any>(null);
   const [questionCount, setQuestionCount] = useState(0);
   const [testTime, setTestTime] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
-
-  const currentTestNo = Number(testNumber);
 
   useEffect(() => {
-    const fetchTestInfo = async () => {
+    if (!category || !testNumber) {
+      setLoading(false);
+      return;
+    }
+
+    const loadData = async () => {
       try {
-        const snap = await firestore()
+        // 1️⃣ TEST INFO
+        const infoSnap = await firestore()
           .collection('QUIZ')
           .doc(category.id)
           .collection('TEST_LIST')
           .doc('TEST_INFO')
           .get();
 
-        const data = snap.data();
-        setTestInfo(data);
-        setTestTime(data?.[`TEST${currentTestNo}_TIME`] ?? 0);
-      } catch (e) {
-        console.log('TEST_INFO error:', e);
-      }
-    };
+        const info = infoSnap.data();
+        if (!info) return;
 
-    fetchTestInfo();
-  }, [category.id, currentTestNo]);
+        setTestInfo(info);
+        setTestTime(info[`TEST${currentTestNo}_TIME`] ?? 0);
 
-  useEffect(() => {
-    if (!testInfo) return;
+        // 2️⃣ QUESTION COUNT
+        const testId = info[`TEST${currentTestNo}_ID`];
+        if (!testId) return;
 
-    const testId = testInfo[`TEST${currentTestNo}_ID`];
-    if (!testId) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchQuestionCount = async () => {
-      try {
-        const snap = await firestore()
+        const qSnap = await firestore()
           .collection('Questions')
           .where('CATEGORY', '==', category.id)
           .where('TEST', '==', testId)
           .get();
 
-        setQuestionCount(snap.size);
+        setQuestionCount(qSnap.size);
       } catch (e) {
-        console.log('Question count error:', e);
+        console.log('StartScreen error:', e);
       } finally {
-        setLoading(false);
+        setLoading(false); // ✅ ONLY PLACE
       }
     };
 
-    fetchQuestionCount();
-  }, [testInfo, category.id, currentTestNo]);
+    loadData();
+  }, [category, testNumber]);
 
   const navigateScreen = () => {
     navigate('Questions', {
@@ -76,39 +70,34 @@ const StartScreen = ({ route }: any) => {
       categoryName: category.name,
     });
   };
+
+  if (loading) {
+    return <CustomLoader visible />;
+  }
+
   return (
     <View style={styles.container}>
-      <CustomLoader visible={loading} />
+      <View style={styles.header}>
+        <TouchableOpacity style={{ marginTop: 20 }} onPress={goBack}>
+          <Icon name="chevron-back" size={26} color={Colors.white} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{category.name}</Text>
+      </View>
 
-      <>
-        <View style={styles.header}>
-          <TouchableOpacity style={{ marginTop: 20 }}>
-            <Icon
-              name="chevron-back"
-              size={26}
-              color={Colors.white}
-              onPress={() => goBack()}
-            />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{category.name}</Text>
-        </View>
+      <Text style={styles.testTitle}>Test No. {currentTestNo}</Text>
 
-        <Text style={styles.testTitle}>Test No. {currentTestNo}</Text>
+      <TestInfoCard
+        questionCount={questionCount}
+        bestScore={80}
+        testTime={testTime}
+      />
 
-        <TestInfoCard
-          questionCount={questionCount}
-          bestScore={80}
-          testTime={testTime}
-        />
-
-        <CustomButton
-          containerStyle={styles.startButton}
-          title={questionCount === 0 ? 'No Questions' : 'Start Quiz'}
-          onPress={navigateScreen}
-          loading={loading}
-          disabled={loading || questionCount === 0}
-        />
-      </>
+      <CustomButton
+        containerStyle={styles.startButton}
+        title={questionCount === 0 ? 'No Questions' : 'Start Quiz'}
+        onPress={navigateScreen}
+        disabled={questionCount === 0}
+      />
     </View>
   );
 };
