@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 16,
     padding: 20,
+    backgroundColor: Colors.white,
   },
 
   option: {
@@ -124,13 +125,13 @@ const styles = StyleSheet.create({
   /* 🔴 MARKED Ribbon (Android style) */
   markedRibbon: {
     position: 'absolute',
-    top: 0,
-    right: 0,
+    top: 10,
+    right: 18,
     backgroundColor: Colors.error, // Android orange
     paddingHorizontal: 20,
-    paddingVertical: 10,
     borderTopRightRadius: 12,
     borderBottomLeftRadius: 8,
+    padding: 4,
     zIndex: 10,
   },
 

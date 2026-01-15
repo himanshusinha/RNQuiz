@@ -14,7 +14,6 @@ import {
   QuestionPaletteItem,
   QuestionWithAnswer,
 } from '../../../types/types';
-
 import CustomLoader from '../../../components/global/CustomLoader';
 import QuizTopHeader from '../../../components/global/CustomQuizHeader';
 import CustomBookMarkHeader from '../../../components/global/CustomBookMarkHeader';
@@ -57,7 +56,7 @@ const QuestionsScreen = ({ route }: any) => {
         const list: QuestionWithAnswer[] = snap.docs.map(doc => ({
           id: doc.id,
           ...(doc.data() as Omit<Question, 'id'>),
-          selected: null, // 👉 OPTION INDEX (1,2,3,4)
+          selected: null,
         }));
 
         setQuestions(list);
@@ -173,10 +172,12 @@ const QuestionsScreen = ({ route }: any) => {
     }
 
     const result = calculateResult();
+
     setExitDialogVisible(false);
+
     navigate('Score', {
       ...result,
-      timeTaken: formatTime(time * 60 - remainingTime),
+      timeTaken: formatTime(remainingTime), // 👈 SAME TIME
     });
   };
 
@@ -189,9 +190,17 @@ const QuestionsScreen = ({ route }: any) => {
       { key: 4, label: item.D },
     ].filter(o => o.label);
 
+    const isMarked = palette[index]?.status === 'markedForReview';
+
     return (
       <View style={{ width }}>
         <View style={styles.content}>
+          {isMarked && (
+            <View style={styles.markedRibbon}>
+              <Text style={styles.markedText}>Marked</Text>
+            </View>
+          )}
+
           <Text style={styles.question}>{item.QUESTION}</Text>
 
           {options.map(opt => (
