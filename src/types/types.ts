@@ -82,9 +82,7 @@ export type TestItem = {
   testNumber: number;
   questionCount: number;
 };
-export type QuestionWithAnswer = Question & {
-  selected?: string | null;
-};
+
 export type Question = {
   id: string;
   QUESTION: string;
@@ -92,7 +90,7 @@ export type Question = {
   B: string;
   C: string;
   D: string;
-  ANSWER: string;
+  ANSWER: number;
   CATEGORY: string;
   TEST: string;
 };
@@ -101,6 +99,9 @@ export type QuestionStatus =
   | 'notAnswered'
   | 'answered'
   | 'markedForReview';
+export type QuestionWithAnswer = Question & {
+  selected: number | null; // ✅ FIXED
+};
 
 export interface QuestionPaletteItem {
   questionNo: number;
