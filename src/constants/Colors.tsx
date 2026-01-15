@@ -9,4 +9,6 @@ export enum Colors {
   navyBlue = '#0A2E8A',
   yellow = '#FFC107',
   green = '#64F200',
+  purple = '#7E57C2',
+  orange = '#FF9800',
 }

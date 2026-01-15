@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { goBack, navigate } from '../../../utils/NavigationUtil';
 import styles from './styles';
 import CustomLoader from '../../../components/global/CustomLoader';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Colors } from '../../../constants/Colors';
+import CustomButton from '../../../components/global/CustomButton';
+import TestInfoCard from '../../../components/quiz/TestInfoCard';
 
 const StartScreen = ({ route }: any) => {
   const { category, testNumber } = route.params;
@@ -67,6 +68,14 @@ const StartScreen = ({ route }: any) => {
     fetchQuestionCount();
   }, [testInfo, category.id, currentTestNo]);
 
+  const navigateScreen = () => {
+    navigate('Questions', {
+      categoryId: category.id,
+      testId: testInfo[`TEST${currentTestNo}_ID`],
+      time: testTime,
+      categoryName: category.name,
+    });
+  };
   return (
     <View style={styles.container}>
       <CustomLoader visible={loading} />
@@ -86,41 +95,19 @@ const StartScreen = ({ route }: any) => {
 
         <Text style={styles.testTitle}>Test No. {currentTestNo}</Text>
 
-        <View style={styles.card}>
-          <View style={styles.statsRow}>
-            <View style={styles.statBox}>
-              <Text style={styles.statValue}>{questionCount}</Text>
-              <Text style={styles.statLabel}>Questions</Text>
-            </View>
+        <TestInfoCard
+          questionCount={questionCount}
+          bestScore={80}
+          testTime={testTime}
+        />
 
-            <View style={styles.statBox}>
-              <Text style={styles.statValue}>80</Text>
-              <Text style={styles.statLabel}>Best Score</Text>
-            </View>
-
-            <View style={styles.statBox}>
-              <Text style={styles.statValue}>{testTime}</Text>
-              <Text style={styles.statLabel}>Time (min)</Text>
-            </View>
-          </View>
-        </View>
-
-        <TouchableOpacity
-          style={[styles.startBtn, questionCount === 0 && { opacity: 0.5 }]}
-          disabled={questionCount === 0}
-          onPress={() =>
-            navigate('Questions', {
-              categoryId: category.id,
-              testId: testInfo[`TEST${currentTestNo}_ID`],
-              time: testTime,
-              categoryName: category.name,
-            })
-          }
-        >
-          <Text style={styles.startText}>
-            {questionCount === 0 ? 'NO QUESTIONS' : 'START'}
-          </Text>
-        </TouchableOpacity>
+        <CustomButton
+          containerStyle={styles.startButton}
+          title={questionCount === 0 ? 'No Questions' : 'Start Quiz'}
+          onPress={navigateScreen}
+          loading={loading}
+          disabled={loading || questionCount === 0}
+        />
       </>
     </View>
   );

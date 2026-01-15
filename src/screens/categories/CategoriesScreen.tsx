@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, FlatList } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-
 import CategoriesItem from '../../components/list/CategoriesItem';
 import { RootStackParamList, TestItem } from '../../types/types';
 import styles from './styles';

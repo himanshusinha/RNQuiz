@@ -8,31 +8,54 @@ import {
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { Question, QuestionWithAnswer } from '../../../types/types';
+import {
+  Question,
+  QuestionPaletteItem,
+  QuestionWithAnswer,
+} from '../../../types/types';
 import CustomLoader from '../../../components/global/CustomLoader';
 import QuizTopHeader from '../../../components/global/CustomQuizHeader';
 import CustomBookMarkHeader from '../../../components/global/CustomBookMarkHeader';
 import CustomQuizBottomBar from '../../../components/global/CustomQuizBottomBar';
-import { goBack } from '../../../utils/NavigationUtil';
+import { goBack, navigate } from '../../../utils/NavigationUtil';
 import styles from './styles';
-
+import QuestionPaletteModal from '../../../components/modal/QuestionPallette';
+import ExitTestDialog from '../../../components/dialog/ExitTestDialog';
 const { width } = Dimensions.get('window');
 
 const QuestionsScreen = ({ route }: any) => {
   const { categoryId, testId, time, categoryName } = route.params;
-
   const [questions, setQuestions] = useState<QuestionWithAnswer[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  // 🔥 TIMER
   const [remainingTime, setRemainingTime] = useState(time * 60);
   const [timerRunning, setTimerRunning] = useState(false);
-
+  const [isTimerPaused, setIsTimerPaused] = useState(false);
+  const [paletteVisible, setPaletteVisible] = useState(false);
+  const [palette, setPalette] = useState<QuestionPaletteItem[]>([]);
+  const [exitDialogVisible, setExitDialogVisible] = useState(false);
   const listRef = useRef<FlatList>(null);
+  const timerRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number>(Date.now());
 
-  /* ---------------- FETCH QUESTIONS ---------------- */
+  useEffect(() => {
+    const list: QuestionPaletteItem[] = Array.from(
+      { length: questions.length },
+      (_, i) => ({
+        questionNo: i + 1,
+        status: 'notVisited',
+      }),
+    );
+
+    setPalette(list);
+  }, [questions.length]);
+  useEffect(() => {
+    if (!loading && questions.length > 0) {
+      startTimeRef.current = Date.now();
+      setTimerRunning(true);
+    }
+  }, [loading, questions.length]);
+
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -68,19 +91,26 @@ const QuestionsScreen = ({ route }: any) => {
   useEffect(() => {
     if (!timerRunning) return;
 
-    const interval = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setRemainingTime(prev => {
         if (prev <= 1) {
-          clearInterval(interval);
+          if (timerRef.current !== null) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
           setTimerRunning(false);
-          console.log('⏰ Time Up');
           return 0;
         }
         return prev - 1;
       });
-    }, 1000);
+    }, 1000) as unknown as number;
 
-    return () => clearInterval(interval);
+    return () => {
+      if (timerRef.current !== null) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [timerRunning]);
 
   const formatTime = (seconds: number) => {
@@ -95,19 +125,41 @@ const QuestionsScreen = ({ route }: any) => {
   };
 
   const selectOption = (qIndex: number, option: string) => {
-    const data = questions;
-    data.forEach((item, index) => {
+    const data = questions.map((item, index) => {
       if (index === qIndex) {
-        item.selected = item.selected === option ? null : option;
+        return {
+          ...item,
+          selected: item.selected === option ? null : option,
+        };
       }
+      return item;
     });
-    updateQuestions(data);
+
+    setQuestions(data);
+
+    setPalette(prev =>
+      prev.map((item, i) =>
+        i === qIndex
+          ? {
+              ...item,
+              status:
+                data[qIndex].selected === null ? 'notAnswered' : 'answered',
+            }
+          : item,
+      ),
+    );
   };
 
   const clearSelection = (qIndex: number) => {
-    const data = questions;
-    data[qIndex].selected = null;
-    updateQuestions(data);
+    const data = [...questions];
+    data[qIndex] = { ...data[qIndex], selected: null };
+    setQuestions(data);
+
+    setPalette(prev =>
+      prev.map((item, i) =>
+        i === qIndex ? { ...item, status: 'notAnswered' } : item,
+      ),
+    );
   };
 
   const goNext = () => {
@@ -136,6 +188,62 @@ const QuestionsScreen = ({ route }: any) => {
     );
   }
 
+  const openExitDialog = () => {
+    setIsTimerPaused(true);
+    setExitDialogVisible(true);
+  };
+
+  const closeExitDialog = () => {
+    setExitDialogVisible(false);
+    setIsTimerPaused(false);
+  };
+
+  const confirmExit = () => {
+    if (timerRef.current !== null) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    setTimerRunning(false);
+    setIsTimerPaused(false);
+    setExitDialogVisible(false);
+
+    const result = calculateResult();
+
+    navigate('Score', {
+      score: result.score,
+      totalQuestions: result.totalQuestions,
+      correct: result.correct,
+      wrong: result.wrong,
+      unAttempted: result.unAttempted,
+      timeTaken: formatTime(remainingTime),
+    });
+  };
+
+  const calculateResult = () => {
+    let correct = 0;
+    let wrong = 0;
+    let unAttempted = 0;
+
+    questions.forEach(q => {
+      if (q.selected === null) {
+        unAttempted++;
+      } else if (q.selected === q.ANSWER) {
+        correct++;
+      } else {
+        wrong++;
+      }
+    });
+
+    return {
+      correct,
+      wrong,
+      unAttempted,
+      totalQuestions: questions.length,
+      score: correct * 10, // ya jo logic chaho
+    };
+  };
+
   const renderItem = ({ item, index }: any) => {
     const options = [item.A, item.B, item.C, item.D].filter(Boolean);
 
@@ -143,6 +251,12 @@ const QuestionsScreen = ({ route }: any) => {
       <View style={{ width }}>
         <View style={styles.content}>
           <View style={styles.questionBox}>
+            {palette[index]?.status === 'markedForReview' && (
+              <View style={styles.markedRibbon}>
+                <Text style={styles.markedText}>Marked</Text>
+              </View>
+            )}
+
             <Text style={styles.question}>{item.QUESTION}</Text>
           </View>
 
@@ -169,16 +283,16 @@ const QuestionsScreen = ({ route }: any) => {
         title={categoryName}
         current={currentIndex + 1}
         total={questions.length}
-        time={formatTime(remainingTime)}
+        time={isTimerPaused ? 'PAUSED' : formatTime(remainingTime)}
         timerRunning={timerRunning}
         onBack={() => goBack()}
-        onSubmit={() => console.log('Submit')}
+        onSubmit={openExitDialog}
       />
 
       <CustomBookMarkHeader
         title={categoryName}
         isBookmarked={false}
-        onMenuPress={() => console.log('Menu')}
+        onMenuPress={() => setPaletteVisible(true)}
       />
 
       <FlatList
@@ -192,6 +306,14 @@ const QuestionsScreen = ({ route }: any) => {
         onMomentumScrollEnd={e => {
           const index = Math.round(e.nativeEvent.contentOffset.x / width);
           setCurrentIndex(index);
+
+          setPalette(prev =>
+            prev.map((item, i) =>
+              i === index && item.status === 'notVisited'
+                ? { ...item, status: 'notAnswered' }
+                : item,
+            ),
+          );
         }}
       />
 
@@ -201,7 +323,31 @@ const QuestionsScreen = ({ route }: any) => {
         onPrev={goPrev}
         onNext={goNext}
         onClear={() => clearSelection(currentIndex)}
-        onMark={() => console.log('Marked')}
+        onMark={() => {
+          setPalette(prev =>
+            prev.map((item, i) =>
+              i === currentIndex
+                ? { ...item, status: 'markedForReview' }
+                : item,
+            ),
+          );
+        }}
+      />
+      <QuestionPaletteModal
+        visible={paletteVisible}
+        onClose={() => setPaletteVisible(false)}
+        palette={palette}
+        onSelectQuestion={qNo => {
+          listRef.current?.scrollToIndex({
+            index: qNo - 1,
+            animated: true,
+          });
+        }}
+      />
+      <ExitTestDialog
+        visible={exitDialogVisible}
+        onCancel={closeExitDialog}
+        onConfirm={confirmExit}
       />
     </SafeAreaView>
   );

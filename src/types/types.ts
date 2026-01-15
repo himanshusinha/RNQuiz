@@ -1,7 +1,14 @@
 //NAVIGATION TYPES
 export type RootStackParamList = {
   Home: undefined;
-
+  Score: {
+    score: number;
+    totalQuestions: number;
+    correct: number;
+    wrong: number;
+    unAttempted: number;
+    timeTaken: string;
+  };
   Categories: {
     category: Category;
   };
@@ -16,7 +23,7 @@ export type RootStackParamList = {
     categoryId: string;
     testId: string;
     time: number;
-    categoryName: string; // ✅ ADD THIS
+    categoryName: string;
   };
 
   BookMark: undefined;
@@ -24,6 +31,7 @@ export type RootStackParamList = {
   Rules: undefined;
   Login: undefined;
   SignUp: undefined;
+  DrawerQuiz: undefined;
 };
 
 // DRAWER
@@ -88,6 +96,27 @@ export type Question = {
   CATEGORY: string;
   TEST: string;
 };
+export type QuestionStatus =
+  | 'notVisited'
+  | 'notAnswered'
+  | 'answered'
+  | 'markedForReview';
+
+export interface QuestionPaletteItem {
+  questionNo: number;
+  status: QuestionStatus;
+}
+export const COLORS: Record<QuestionStatus, string> = {
+  answered: '#4CAF50', // ✅ matches 'answered'
+  notAnswered: '#F44336', // ✅ matches 'notAnswered'
+  markedForReview: '#9C27B0', // ✅ matches 'markedForReview'
+  notVisited: '#BDBDBD', // ✅ matches 'notVisited'
+};
+export interface TestInfoCardProps {
+  questionCount: number;
+  bestScore: number;
+  testTime: number;
+}
 export interface QuizTopHeaderProps {
   current: number;
   total: number;
@@ -96,6 +125,7 @@ export interface QuizTopHeaderProps {
   onBack: () => void;
   onSubmit: () => void;
   timerRunning: boolean;
+  isPaused?: boolean;
 }
 //COMPONENT PROPS
 export interface CategoryCardProps {

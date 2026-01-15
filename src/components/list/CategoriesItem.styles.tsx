@@ -1,25 +1,51 @@
 import { StyleSheet } from 'react-native';
+import { Colors } from '../../constants/Colors';
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    padding: 16,
+    backgroundColor: Colors.white,
+    paddingVertical: 18,
+    paddingHorizontal: 12,
     borderRadius: 12,
-    marginBottom: 12,
-    elevation: 3,
+    marginBottom: 16,
+
+    // Android shadow
+    elevation: 6,
+
+    // iOS shadow
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
   },
+
+  disabledCard: {
+    opacity: 0.5,
+  },
+
   title: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 10,
+    color: Colors.black,
   },
-  progressContainer: {
-    marginTop: 10,
+
+  countText: {
+    textAlign: 'center',
+    fontSize: 13,
+    color: Colors.gray,
+    marginBottom: 6,
   },
-  percentage: {
-    alignSelf: 'flex-end',
-    marginTop: 4,
-    fontSize: 12,
-    color: '#555',
+
+  noTestText: {
+    color: Colors.black,
+  },
+
+  lockIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
 });
 export default styles;

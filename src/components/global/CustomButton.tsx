@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   text: {
     color: Colors.white,
     fontSize: RFValue(14),
-    fontFamily: FONTS.Medium,
+    fontFamily: FONTS.Bold,
   },
   disabled: {
     opacity: 0.6,

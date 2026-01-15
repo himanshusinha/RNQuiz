@@ -5,7 +5,7 @@ import CategoriesScreen from '../screens/categories/CategoriesScreen';
 import BottomNavigator from './BottomNavigator';
 import type { RootStackParamList } from '../types/types';
 import QuestionsScreen from '../screens/dashboard/questions/QuestionsScreen';
-import { StartScreen } from '../screens';
+import { ScoreScreen, StartScreen } from '../screens';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -53,9 +53,9 @@ const HomeNavigator = () => {
           );
         }}
       </Stack.Screen>
-
       <Stack.Screen name="Questions" component={QuestionsScreen} />
       <Stack.Screen name="Start" component={StartScreen} />
+      <Stack.Screen name="Score" component={ScoreScreen} />
     </Stack.Navigator>
   );
 };

@@ -121,5 +121,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
+  /* 🔴 MARKED Ribbon (Android style) */
+  markedRibbon: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: Colors.error, // Android orange
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderTopRightRadius: 12,
+    borderBottomLeftRadius: 8,
+    zIndex: 10,
+  },
+
+  markedText: {
+    color: Colors.white,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
 });
 export default styles;

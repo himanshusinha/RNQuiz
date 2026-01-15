@@ -29,4 +29,10 @@ export default StyleSheet.create({
     fontSize: 14,
     color: Colors.gray,
   },
+  noTest: {
+    marginTop: 8,
+    fontSize: 12,
+    color: '#999',
+    fontStyle: 'italic',
+  },
 });

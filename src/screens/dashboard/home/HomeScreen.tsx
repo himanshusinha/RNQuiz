@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, Text } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import CategoryCard from '../../../components/list/CategoryCard';
 import { navigate } from '../../../utils/NavigationUtil';
@@ -15,7 +15,6 @@ const HomeScreen: React.FC = () => {
     const fetchCategories = async () => {
       try {
         const snapshot = await firestore().collection('QUIZ').get();
-
         const list: Category[] = snapshot.docs
           .filter(doc => doc.id !== 'Categories')
           .map(doc => ({
@@ -36,12 +35,10 @@ const HomeScreen: React.FC = () => {
     fetchCategories();
   }, []);
 
-  /* 🔥 ONLY LOADER */
   if (loading) {
     return <CustomLoader visible={true} />;
   }
 
-  /* 🔥 MAIN UI */
   return (
     <View style={styles.container}>
       <FlatList

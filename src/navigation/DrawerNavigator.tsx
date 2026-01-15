@@ -5,22 +5,10 @@ import RulesScreen from '../screens/rules/RulesScreen';
 import CustomDrawerContent from '../components/global/CustomDrawerContent';
 import HomeNavigator from './HomeNavigator';
 import { DrawerParamList } from '../types/types';
-import { DefaultTheme } from '@react-navigation/native';
-import { Colors } from '../constants/Colors';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 const DrawerNavigator = () => {
-  const BlueTheme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      primary: Colors.white,
-      background: Colors.white,
-      card: Colors.white,
-      text: Colors.black,
-    },
-  };
   return (
     <Drawer.Navigator
       initialRouteName="Home"

@@ -42,43 +42,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 20,
   },
-
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-
-  statBox: {
-    alignItems: 'center',
-    flex: 1,
-  },
-
-  statValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.darkBlue,
-  },
-
-  statLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
-  },
-
-  /* 🔥 FIXED START BUTTON */
-  startBtn: {
-    backgroundColor: Colors.darkBlue, // ✅ REQUIRED
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginHorizontal: 20,
-    marginBottom: 24, // ✅ instead of bottom
-  },
-
-  startText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+  startButton: {
+    backgroundColor: Colors.darkBlue,
+    marginBottom: 40,
+    marginHorizontal: 10,
   },
 });
 
