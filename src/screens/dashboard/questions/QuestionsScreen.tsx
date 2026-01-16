@@ -6,7 +6,7 @@ import {
   FlatList,
   Dimensions,
 } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { getFirestore } from '@react-native-firebase/firestore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
@@ -14,22 +14,24 @@ import {
   QuestionPaletteItem,
   QuestionWithAnswer,
 } from '../../../types/types';
+
 import CustomLoader from '../../../components/global/CustomLoader';
 import QuizTopHeader from '../../../components/global/CustomQuizHeader';
 import CustomBookMarkHeader from '../../../components/global/CustomBookMarkHeader';
 import CustomQuizBottomBar from '../../../components/global/CustomQuizBottomBar';
 import QuestionPaletteModal from '../../../components/modal/QuestionPallette';
 import ExitTestDialog from '../../../components/dialog/ExitTestDialog';
-
 import { goBack, navigate } from '../../../utils/NavigationUtil';
 import styles from './styles';
+import { useBookmarks } from '../../../context/BookMarkContext';
+import { getApp } from '@react-native-firebase/app';
+import { getAuth } from '@react-native-firebase/auth';
 
 const { width } = Dimensions.get('window');
 
 const QuestionsScreen = ({ route }: any) => {
-  const { categoryId, testId, time, categoryName } = route.params;
-  const category = route.params?.category;
-  const testNumber = route.params?.testNumber;
+  const { categoryId, testId, time, categoryName, testNumber } = route.params;
+
   const [questions, setQuestions] = useState<QuestionWithAnswer[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -42,7 +44,10 @@ const QuestionsScreen = ({ route }: any) => {
   const [exitDialogVisible, setExitDialogVisible] = useState(false);
 
   const listRef = useRef<FlatList>(null);
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startTimeRef = useRef<number>(Date.now());
+
+  const { bookmarks, toggleBookmark } = useBookmarks();
 
   /* ---------------- FETCH QUESTIONS ---------------- */
   useEffect(() => {
@@ -58,6 +63,7 @@ const QuestionsScreen = ({ route }: any) => {
           id: doc.id,
           ...(doc.data() as Omit<Question, 'id'>),
           selected: null,
+          marked: false,
         }));
 
         setQuestions(list);
@@ -71,6 +77,7 @@ const QuestionsScreen = ({ route }: any) => {
       } catch (e) {
         console.log('Question fetch error:', e);
       } finally {
+        startTimeRef.current = Date.now();
         setLoading(false);
         setTimerRunning(true);
       }
@@ -92,13 +99,10 @@ const QuestionsScreen = ({ route }: any) => {
         }
         return prev - 1;
       });
-    }, 1000) as any;
+    }, 1000);
 
     return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [timerRunning]);
 
@@ -108,23 +112,22 @@ const QuestionsScreen = ({ route }: any) => {
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   };
 
-  /* ---------------- SELECT OPTION (FIXED) ---------------- */
+  /* ---------------- OPTION SELECT ---------------- */
   const selectOption = (qIndex: number, optionIndex: number) => {
-    const updated = questions.map((q, i) =>
-      i === qIndex
-        ? { ...q, selected: q.selected === optionIndex ? null : optionIndex }
-        : q,
+    setQuestions(prev =>
+      prev.map((q, i) =>
+        i === qIndex
+          ? { ...q, selected: q.selected === optionIndex ? null : optionIndex }
+          : q,
+      ),
     );
-
-    setQuestions(updated);
 
     setPalette(prev =>
       prev.map((p, i) =>
         i === qIndex
           ? {
               ...p,
-              status:
-                updated[qIndex].selected === null ? 'notAnswered' : 'answered',
+              status: 'answered',
             }
           : p,
       ),
@@ -132,47 +135,82 @@ const QuestionsScreen = ({ route }: any) => {
   };
 
   const clearSelection = (qIndex: number) => {
-    const updated = [...questions];
-    updated[qIndex].selected = null;
-    setQuestions(updated);
+    setQuestions(prev =>
+      prev.map((q, i) => (i === qIndex ? { ...q, selected: null } : q)),
+    );
 
     setPalette(prev =>
       prev.map((p, i) => (i === qIndex ? { ...p, status: 'notAnswered' } : p)),
     );
   };
 
-  /* ---------------- RESULT LOGIC (100% CORRECT) ---------------- */
-  const calculateResult = () => {
+  /* ---------------- RESULT LOGIC ---------------- */
+  const calculateResult = (questions: QuestionWithAnswer[]) => {
     let correct = 0;
     let wrong = 0;
     let unAttempted = 0;
+    let marked = 0;
+    let score = 0;
 
     questions.forEach(q => {
+      if (q.marked) marked++;
+
       if (q.selected === null) {
         unAttempted++;
       } else if (q.selected === q.ANSWER) {
         correct++;
+        score += 10; // 10 marks per correct
       } else {
         wrong++;
       }
     });
 
     return {
+      score,
+      totalQuestions: questions.length,
       correct,
       wrong,
       unAttempted,
-      totalQuestions: questions.length,
-      score: correct * 10,
+      marked,
     };
   };
 
-  const confirmExit = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
+  /* ---------------- SUBMIT / EXIT ---------------- */
+  const confirmExit = async () => {
+    if (timerRef.current) clearInterval(timerRef.current);
 
-    const result = calculateResult();
+    const result = calculateResult(questions);
+
+    // ✅ Store the score in Firestore
+    try {
+      const app = getApp();
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+      const user = auth.currentUser;
+
+      if (user) {
+        await db
+          .collection('users')
+          .doc(user.uid)
+          .set(
+            {
+              [`scores.${testId}`]: {
+                score: result.score,
+                totalQuestions: result.totalQuestions,
+                correct: result.correct,
+                wrong: result.wrong,
+                unAttempted: result.unAttempted,
+                marked: result.marked,
+                timeTaken: formatTime(remainingTime),
+                timestamp: new Date(),
+              },
+            },
+            { merge: true }, // ✅ merge so we don’t overwrite other fields
+          );
+      }
+    } catch (err) {
+      console.log('Error saving score:', err);
+    }
 
     setExitDialogVisible(false);
 
@@ -181,12 +219,30 @@ const QuestionsScreen = ({ route }: any) => {
       totalQuestions: result.totalQuestions,
       correct: result.correct,
       wrong: result.wrong,
+      marked: result.marked,
       unAttempted: result.unAttempted,
-      timeTaken: formatTime(remainingTime), // ✅ SAME TIME
+      timeTaken: formatTime(remainingTime),
+      questions,
+      categoryId,
+      categoryName,
+      testNumber,
     });
   };
 
-  /* ---------------- RENDER ITEM ---------------- */
+  /* ---------------- BOOKMARK ---------------- */
+  const handleBookmark = () => {
+    const question = questions[currentIndex];
+    toggleBookmark({ ...question, marked: !question.marked });
+
+    // local marked state update for ribbon
+    setQuestions(prev =>
+      prev.map((q, i) =>
+        i === currentIndex ? { ...q, marked: !q.marked } : q,
+      ),
+    );
+  };
+
+  /* ---------------- RENDER QUESTION ---------------- */
   const renderItem = ({ item, index }: any) => {
     const options = [
       { key: 1, label: item.A },
@@ -195,14 +251,12 @@ const QuestionsScreen = ({ route }: any) => {
       { key: 4, label: item.D },
     ].filter(o => o.label);
 
-    const isMarked = palette[index]?.status === 'markedForReview';
-
     return (
       <View style={{ width }}>
         <View style={styles.content}>
-          {isMarked && (
+          {item.marked && (
             <View style={styles.markedRibbon}>
-              <Text style={styles.markedText}>Marked</Text>
+              <Text style={styles.markedText}>MARKED</Text>
             </View>
           )}
 
@@ -217,7 +271,9 @@ const QuestionsScreen = ({ route }: any) => {
               ]}
               onPress={() => selectOption(index, opt.key)}
             >
-              <Text style={styles.optionText}>{opt.label}</Text>
+              <Text style={styles.optionText}>
+                {opt.key}. {opt.label}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -248,7 +304,8 @@ const QuestionsScreen = ({ route }: any) => {
 
       <CustomBookMarkHeader
         title={categoryName}
-        isBookmarked={false}
+        isBookmarked={questions[currentIndex]?.marked}
+        onBookmarkPress={handleBookmark}
         onMenuPress={() => setPaletteVisible(true)}
       />
 
@@ -284,13 +341,22 @@ const QuestionsScreen = ({ route }: any) => {
           listRef.current?.scrollToIndex({ index: currentIndex + 1 })
         }
         onClear={() => clearSelection(currentIndex)}
-        onMark={() =>
+        onMark={() => {
+          handleBookmark();
           setPalette(prev =>
             prev.map((p, i) =>
-              i === currentIndex ? { ...p, status: 'markedForReview' } : p,
+              i === currentIndex
+                ? {
+                    ...p,
+                    status:
+                      p.status === 'markedForReview'
+                        ? 'notAnswered'
+                        : 'markedForReview',
+                  }
+                : p,
             ),
-          )
-        }
+          );
+        }}
       />
 
       <QuestionPaletteModal

@@ -1,21 +1,16 @@
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
+
 //NAVIGATION TYPES
 export type RootStackParamList = {
   Home: undefined;
-  Score: {
-    score: number;
-    totalQuestions: number;
-    correct: number;
-    wrong: number;
-    unAttempted: number;
-    timeTaken: string;
-  };
+
   Categories: {
     category: Category;
   };
+
   Start: {
-    category: Category;
-    testId: string;
-    testTitle: string;
+    categoryId: string;
+    categoryName: string;
     testNumber: number;
   };
 
@@ -23,6 +18,26 @@ export type RootStackParamList = {
     categoryId: string;
     testId: string;
     time: number;
+    categoryName: string;
+    testNumber: number;
+  };
+
+  Score: {
+    score: number;
+    totalQuestions: number;
+    correct: number;
+    wrong: number;
+    unAttempted: number;
+    marked: number; // ✅ ADD THIS
+    timeTaken: string;
+    questions: QuestionWithAnswer[];
+    categoryId: string;
+    categoryName: string;
+    testNumber: number;
+  };
+
+  Answers: {
+    questions: QuestionWithAnswer[];
     categoryName: string;
   };
 
@@ -32,6 +47,7 @@ export type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;
   DrawerQuiz: undefined;
+  Profile: undefined;
 };
 
 // DRAWER
@@ -40,20 +56,15 @@ export type DrawerParamList = {
   BookMark: undefined;
   Rules: undefined;
   Score: undefined;
+  Settings: undefined;
 };
 // CUSTOM HEADER
 export type CustomHeaderProps = {
   title: string;
-  navigation: {
-    goBack: () => void;
-    getParent?: () =>
-      | {
-          openDrawer: () => void;
-        }
-      | undefined;
-  };
+  navigation: NavigationProp<ParamListBase>;
   showBack?: boolean;
 };
+
 export type CustomQuizBottomBarProps = {
   isFirst: boolean;
   isLast: boolean;
@@ -65,7 +76,7 @@ export type CustomQuizBottomBarProps = {
 //  BOTTOM TAB
 export type BottomTabParamList = {
   Home: undefined;
-  Account: undefined;
+  Settings: undefined;
 };
 
 //FIREBASE MODELS
@@ -93,6 +104,7 @@ export type Question = {
   ANSWER: number;
   CATEGORY: string;
   TEST: string;
+  marked: boolean;
 };
 export type QuestionStatus =
   | 'notVisited'
@@ -115,8 +127,8 @@ export const COLORS: Record<QuestionStatus, string> = {
 };
 export interface TestInfoCardProps {
   questionCount: number;
-  bestScore: number;
   testTime: number;
+  bestScore: number;
 }
 export interface QuizTopHeaderProps {
   current: number;

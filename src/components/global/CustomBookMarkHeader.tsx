@@ -7,18 +7,20 @@ type CustomBookMarkHeaderProps = {
   onMenuPress?: () => void;
   title: string;
   isBookmarked: boolean;
+  onBookmarkPress: () => void;
 };
 
 const CustomBookMarkHeader: React.FC<CustomBookMarkHeaderProps> = ({
   onMenuPress,
   title,
   isBookmarked,
+  onBookmarkPress,
 }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
 
-      <TouchableOpacity style={styles.left}>
+      <TouchableOpacity onPress={onBookmarkPress} style={styles.left}>
         <Icon
           name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
           size={20}

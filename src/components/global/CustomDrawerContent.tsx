@@ -18,9 +18,7 @@ import UserIcon from '../../assets/icons/user.png';
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   const { navigation, state } = props;
-
   const [userName, setUserName] = useState('');
-  console.log(userName);
   const [userEmail, setUserEmail] = useState('');
   const [userId, setUserId] = useState('');
   const [photoURL, setPhotoURL] = useState<string | null>(null);
@@ -138,17 +136,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
           {renderDrawerItem('Rules', 'Rules', 'rule')}
         </View>
       </DrawerContentScrollView>
-
-      <View style={styles.logoutContainer}>
-        <DrawerItem
-          label="Logout"
-          onPress={onLogout}
-          icon={({ size }) => (
-            <Icon name="logout" size={size} color={Colors.error} />
-          )}
-          labelStyle={{ color: Colors.error }}
-        />
-      </View>
     </View>
   );
 };

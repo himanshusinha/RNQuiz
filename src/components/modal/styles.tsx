@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     borderRadius: 23,
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 4,
   },
   circleText: {
     color: '#fff',

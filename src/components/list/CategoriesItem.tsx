@@ -1,7 +1,6 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { CategoriesItemProps } from '../../types/types';
-import CustomLineProgressBar from '../global/CustomLineProgressBar';
 import { navigate } from '../../utils/NavigationUtil';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '../../constants/Colors';
@@ -13,16 +12,16 @@ const CategoriesItem: React.FC<CategoriesItemProps> = ({ item, category }) => {
   return (
     <TouchableOpacity
       disabled={isLocked}
+      activeOpacity={0.8}
       onPress={() =>
         navigate('Start', {
-          category,
-          testId: item.id,
-          testTitle: item.title,
+          // ✅ UNIVERSAL PARAMS (SAFE FOR ALL FLOWS)
+          categoryId: category.id,
+          categoryName: category.name,
           testNumber: item.testNumber,
         })
       }
       style={[styles.card, isLocked && styles.disabledCard]}
-      activeOpacity={0.8}
     >
       <Text style={styles.title}>{item.title}</Text>
 
@@ -33,7 +32,6 @@ const CategoriesItem: React.FC<CategoriesItemProps> = ({ item, category }) => {
           : 'No Test Available'}
       </Text>
 
-      <CustomLineProgressBar progress={item.progress} />
 
       {/* 🔒 Lock Icon */}
       {isLocked && (

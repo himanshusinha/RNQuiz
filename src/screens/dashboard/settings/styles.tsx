@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     marginTop: 16,
-    width: '85%',
+    width: '40%',
     paddingVertical: 14,
     justifyContent: 'space-around',
   },
@@ -102,6 +102,17 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 15,
     color: '#000',
+  },
+  profileContainer: {
+    height: 140,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
   },
 });
 export default styles;

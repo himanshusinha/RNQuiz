@@ -2,48 +2,38 @@ import { StyleSheet } from 'react-native';
 import { Colors } from '../../../constants/Colors';
 
 const styles = StyleSheet.create({
-  /* Container */
+  /* EXISTING */
   container: {
     flex: 1,
     backgroundColor: '#F2F5F9',
   },
-
-  /* FlatList content padding */
   list: {
     padding: 16,
+    backgroundColor: '#F5F5F5',
   },
 
-  /* Card for each question */
   card: {
     backgroundColor: Colors.white,
-    padding: 16,
+    padding: 14,
     borderRadius: 8,
     marginBottom: 16,
-    elevation: 3, // shadow for Android
-    shadowColor: '#000', // shadow for iOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    position: 'relative', // for badge
+    elevation: 2,
   },
 
-  /* Question number */
   qNo: {
     fontSize: 14,
     fontWeight: '600',
     color: '#3F51B5',
-    marginBottom: 6,
+    marginBottom: 4,
   },
 
-  /* Question text */
   question: {
     fontSize: 16,
     fontWeight: '700',
     color: Colors.black,
-    marginBottom: 12,
+    marginBottom: 10,
   },
 
-  /* Option container */
   option: {
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -54,17 +44,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAFA',
   },
 
-  /* Option text */
   optionText: {
     fontSize: 14,
     color: Colors.black,
   },
 
-  /* Correct option */
+  /* ✅ CORRECT OPTION */
   correctOption: {
     backgroundColor: '#E8F5E9',
     borderColor: '#4CAF50',
   },
+
   correctText: {
     color: '#2E7D32',
     fontSize: 12,
@@ -72,11 +62,12 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  /* Wrong option */
+  /* ❌ WRONG OPTION */
   wrongOption: {
     backgroundColor: '#FDECEA',
     borderColor: '#F44336',
   },
+
   wrongText: {
     color: '#C62828',
     fontSize: 12,
@@ -84,15 +75,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  /* Unattempted option */
+  /* ⚪ UNATTEMPTED */
   unattemptedText: {
     marginTop: 8,
     fontSize: 13,
     fontWeight: '600',
     color: '#FF9800',
   },
-
-  /* Marked Badge */
   markedBadge: {
     position: 'absolute',
     right: 12,

@@ -77,13 +77,12 @@ export default StyleSheet.create({
 
   statsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-evenly',
     marginTop: 16,
   },
 
   statBox: {
     backgroundColor: '#fff',
-    width: '28%',
     borderRadius: 10,
     padding: 12,
     alignItems: 'center',

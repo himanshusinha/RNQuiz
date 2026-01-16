@@ -1,24 +1,23 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { QuizTopHeaderProps } from '../../types/types';
 import { Colors } from '../../constants/Colors';
+import { goBack } from '../../utils/NavigationUtil';
 
 const QuizTopHeader: React.FC<QuizTopHeaderProps> = ({
   current,
   total,
-  time, // ✅ string like "24:55" OR "PAUSED"
-  onBack,
+  time,
   onSubmit,
   timerRunning,
   isPaused,
 }) => {
   return (
     <View style={styles.topHeader}>
-      {/* LEFT */}
       <View style={styles.left}>
-        <TouchableOpacity style={styles.backBtn} onPress={onBack}>
-          <Icon name="chevron-back" size={24} color={Colors.white} />
+        <TouchableOpacity onPress={goBack}>
+          <Ionicons name="arrow-back" size={24} color={Colors.white} />
         </TouchableOpacity>
         <Text style={styles.count}>
           {current}/{total}
@@ -73,6 +72,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 14,
     fontWeight: '600',
+    marginStart: 10,
   },
 
   timerContainer: {
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
 
   submitText: {
-    color: Colors.white,
+    color: Colors.black,
     fontSize: 13,
     fontWeight: '700',
   },

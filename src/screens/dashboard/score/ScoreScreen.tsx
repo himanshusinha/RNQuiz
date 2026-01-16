@@ -1,29 +1,55 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './styles';
 import { Colors } from '../../../constants/Colors';
+import CustomHeader from '../../../components/global/CustomHeader';
 
 const ScoreScreen = ({ route, navigation }: any) => {
-  const { score, totalQuestions, correct, wrong, unAttempted, timeTaken } =
-    route.params;
+  const {
+    score,
+    totalQuestions,
+    correct,
+    wrong,
+    unAttempted,
+    timeTaken,
+    marked,
+    questions,
+  } = route.params;
+  console.log(score);
+  const answersScreen = () => {
+    if (!questions || questions.length === 0) return;
+
+    navigation.navigate('Answers', {
+      questions,
+      categoryName: route.params.categoryName,
+    });
+  };
+  const reattemptQuiz = () => {
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'Start',
+          params: {
+            categoryId: route.params.categoryId,
+            categoryName: route.params.categoryName,
+            testNumber: route.params.testNumber,
+            lastScore: score, // ✅ score bhej rahe hain
+          },
+        },
+      ],
+    });
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="chevron-back" size={24} color={Colors.white} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Result</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <CustomHeader title={'Results'} navigation={navigation} showBack={true} />
 
       {/* Score Card */}
       <View style={styles.scoreCard}>
         <Text style={styles.scoreTitle}>Your Score is :</Text>
-
         <View style={styles.scoreCircle}>
           <Text style={styles.scoreText}>{score}</Text>
         </View>
@@ -67,19 +93,25 @@ const ScoreScreen = ({ route, navigation }: any) => {
             {unAttempted}
           </Text>
         </View>
+        <View style={styles.statBox}>
+          <Icon name="help-circle" size={22} color={Colors.orange} />
+          <Text style={styles.statLabel}>Marked</Text>
+          <Text style={[styles.statValue, { color: Colors.error }]}>
+            {marked}
+          </Text>
+        </View>
       </View>
 
       {/* Buttons */}
       <View style={styles.bottomBtns}>
-        <TouchableOpacity style={styles.retryBtn}>
-          <Text style={styles.retryText}>RE-ATTEMPT</Text>
+        <TouchableOpacity onPress={reattemptQuiz} style={styles.retryBtn}>
+          <Text style={styles.answerText}>Reattempt</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.answerBtn}>
-          <Text style={styles.answerText}>VIEW ANSWERS</Text>
+        <TouchableOpacity onPress={answersScreen} style={styles.answerBtn}>
+          <Text style={styles.answerText}>View Answers</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

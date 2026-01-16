@@ -4,6 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { HomeScreen, MyAccountScreen } from '../screens';
 import { Colors } from '../constants/Colors';
 import { BottomTabParamList } from '../types/types';
+import SettingsScreen from '../screens/dashboard/settings/SettingsScreen';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -21,15 +22,15 @@ const BottomNavigator = () => {
                 ? 'home'
                 : 'home-outline'
               : focused
-              ? 'person'
-              : 'person-outline';
+              ? 'settings'
+              : 'settings-outline';
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Account" component={MyAccountScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
 };

@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { goBack, navigate } from '../../../utils/NavigationUtil';
+import { navigate } from '../../../utils/NavigationUtil';
 import styles from './styles';
 import CustomLoader from '../../../components/global/CustomLoader';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { Colors } from '../../../constants/Colors';
 import CustomButton from '../../../components/global/CustomButton';
 import TestInfoCard from '../../../components/quiz/TestInfoCard';
+import CustomHeader from '../../../components/global/CustomHeader';
+import { useNavigation } from '@react-navigation/native';
 
 const StartScreen = ({ route }: any) => {
-  const category = route.params?.category;
+  const navigation = useNavigation<any>(); // ✅ IMPORTANT
+
+  const categoryFromParams = route.params?.category;
+  const categoryId = route.params?.categoryId ?? categoryFromParams?.id;
+  const categoryName =
+    route.params?.categoryName ?? categoryFromParams?.name ?? '';
   const testNumber = route.params?.testNumber;
   const currentTestNo = Number(testNumber);
+  const lastScore = route.params?.lastScore;
 
   const [loading, setLoading] = useState(true);
   const [testInfo, setTestInfo] = useState<any>(null);
@@ -20,17 +26,16 @@ const StartScreen = ({ route }: any) => {
   const [testTime, setTestTime] = useState<number>(0);
 
   useEffect(() => {
-    if (!category || !testNumber) {
+    if (!categoryId || !testNumber) {
       setLoading(false);
       return;
     }
 
     const loadData = async () => {
       try {
-        // 1️⃣ TEST INFO
         const infoSnap = await firestore()
           .collection('QUIZ')
-          .doc(category.id)
+          .doc(categoryId)
           .collection('TEST_LIST')
           .doc('TEST_INFO')
           .get();
@@ -41,13 +46,12 @@ const StartScreen = ({ route }: any) => {
         setTestInfo(info);
         setTestTime(info[`TEST${currentTestNo}_TIME`] ?? 0);
 
-        // 2️⃣ QUESTION COUNT
         const testId = info[`TEST${currentTestNo}_ID`];
         if (!testId) return;
 
         const qSnap = await firestore()
           .collection('Questions')
-          .where('CATEGORY', '==', category.id)
+          .where('CATEGORY', '==', categoryId)
           .where('TEST', '==', testId)
           .get();
 
@@ -55,19 +59,22 @@ const StartScreen = ({ route }: any) => {
       } catch (e) {
         console.log('StartScreen error:', e);
       } finally {
-        setLoading(false); // ✅ ONLY PLACE
+        setLoading(false);
       }
     };
 
     loadData();
-  }, [category, testNumber]);
+  }, [categoryId, testNumber]);
 
   const navigateScreen = () => {
+    if (!testInfo) return;
+
     navigate('Questions', {
-      categoryId: category.id,
+      categoryId,
       testId: testInfo[`TEST${currentTestNo}_ID`],
       time: testTime,
-      categoryName: category.name,
+      categoryName,
+      testNumber: currentTestNo,
     });
   };
 
@@ -77,18 +84,14 @@ const StartScreen = ({ route }: any) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={{ marginTop: 20 }} onPress={goBack}>
-          <Icon name="chevron-back" size={26} color={Colors.white} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{category.name}</Text>
-      </View>
+      {/* ✅ FIXED HEADER */}
+      <CustomHeader title={categoryName} navigation={navigation} showBack />
 
       <Text style={styles.testTitle}>Test No. {currentTestNo}</Text>
 
       <TestInfoCard
+        bestScore={lastScore ?? 0}
         questionCount={questionCount}
-        bestScore={80}
         testTime={testTime}
       />
 

@@ -5,8 +5,8 @@ import { TestInfoCardProps } from '../../types/types';
 
 const TestInfoCard: React.FC<TestInfoCardProps> = ({
   questionCount,
-  bestScore,
   testTime,
+  bestScore,
 }) => {
   return (
     <View>
