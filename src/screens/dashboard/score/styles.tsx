@@ -136,4 +136,5 @@ export default StyleSheet.create({
     color: '#fff',
     fontWeight: '700',
   },
+  inputStyle: { padding: 16 },
 });

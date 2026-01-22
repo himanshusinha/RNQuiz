@@ -1,9 +1,11 @@
-// App.tsx
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-
+import { getApp } from '@react-native-firebase/app';
+import {
+  getAuth,
+  onAuthStateChanged,
+  FirebaseAuthTypes,
+} from '@react-native-firebase/auth';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import DrawerNavigator from './src/navigation/DrawerNavigator';
 import { navigationRef } from './src/utils/NavigationUtil';
@@ -27,7 +29,10 @@ export default function App() {
   };
 
   useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged(async currentUser => {
+    const app = getApp();
+    const auth = getAuth(app);
+
+    const unsubscribe = onAuthStateChanged(auth, async currentUser => {
       setUser(currentUser);
 
       if (currentUser) {
@@ -35,8 +40,8 @@ export default function App() {
           const token = await currentUser.getIdToken();
           setIdToken(token);
           console.log('Firebase ID Token:', token);
-        } catch (err) {
-          console.error('Error fetching ID token:', err);
+        } catch (error) {
+          console.log('Token fetch error:', error);
         }
       } else {
         setIdToken(null);

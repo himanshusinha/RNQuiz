@@ -35,7 +35,7 @@ const ScoreScreen = ({ route, navigation }: any) => {
             categoryId: route.params.categoryId,
             categoryName: route.params.categoryName,
             testNumber: route.params.testNumber,
-            lastScore: score, // ✅ score bhej rahe hain
+            lastScore: score,
           },
         },
       ],
@@ -44,10 +44,7 @@ const ScoreScreen = ({ route, navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <CustomHeader title={'Results'} navigation={navigation} showBack={true} />
-
-      {/* Score Card */}
       <View style={styles.scoreCard}>
         <Text style={styles.scoreTitle}>Your Score is :</Text>
         <View style={styles.scoreCircle}>
@@ -55,7 +52,6 @@ const ScoreScreen = ({ route, navigation }: any) => {
         </View>
       </View>
 
-      {/* Time & Total */}
       <View style={styles.infoRow}>
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>Time Taken</Text>
@@ -68,10 +64,9 @@ const ScoreScreen = ({ route, navigation }: any) => {
         </View>
       </View>
 
-      {/* Stats */}
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
-          <Icon name="checkmark-circle" size={22} color="#4CAF50" />
+          <Icon name="checkmark-circle" size={22} color={Colors.green} />
           <Text style={styles.statLabel}>Correct</Text>
           <Text style={[styles.statValue, { color: Colors.green }]}>
             {correct}
@@ -102,7 +97,6 @@ const ScoreScreen = ({ route, navigation }: any) => {
         </View>
       </View>
 
-      {/* Buttons */}
       <View style={styles.bottomBtns}>
         <TouchableOpacity onPress={reattemptQuiz} style={styles.retryBtn}>
           <Text style={styles.answerText}>Reattempt</Text>

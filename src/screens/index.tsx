@@ -8,3 +8,4 @@ export { default as ScoreScreen } from '../screens/dashboard/score/ScoreScreen';
 export { default as QuestionsScreen } from '../screens/dashboard/questions/QuestionsScreen';
 export { default as StartScreen } from '../screens/dashboard/start/StartScreen';
 export { default as AnswersScreen } from '../screens/dashboard/answers/AnswersScreen';
+export { default as UpdateProfile } from '../screens/dashboard/profile/UpdateProfileScreen';

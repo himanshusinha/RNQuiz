@@ -8,7 +8,7 @@ export enum Colors {
   error = '#EE4B2B',
   navyBlue = '#0A2E8A',
   yellow = '#FFC107',
-  green = '#64F200',
+  green = '#4F7942',
   purple = '#7E57C2',
   orange = '#FF9800',
 }

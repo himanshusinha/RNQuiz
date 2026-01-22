@@ -41,7 +41,6 @@ const CategoriesScreen: React.FC = () => {
               .where('CATEGORY', '==', category.id)
               .where('TEST', '==', testId)
               .get();
-
             questionCount = qSnap.size;
           }
 

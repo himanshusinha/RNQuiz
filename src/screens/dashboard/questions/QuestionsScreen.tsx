@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import firestore, { getFirestore } from '@react-native-firebase/firestore';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import {
   Question,
   QuestionPaletteItem,
@@ -26,30 +25,26 @@ import styles from './styles';
 import { useBookmarks } from '../../../context/BookMarkContext';
 import { getApp } from '@react-native-firebase/app';
 import { getAuth } from '@react-native-firebase/auth';
+import CustomButton from '../../../components/global/CustomButton';
 
 const { width } = Dimensions.get('window');
 
 const QuestionsScreen = ({ route }: any) => {
   const { categoryId, testId, time, categoryName, testNumber } = route.params;
-
   const [questions, setQuestions] = useState<QuestionWithAnswer[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-
   const [remainingTime, setRemainingTime] = useState(time * 60);
   const [timerRunning, setTimerRunning] = useState(false);
-
+  const [timeUp, setTimeUp] = useState(false);
   const [palette, setPalette] = useState<QuestionPaletteItem[]>([]);
   const [paletteVisible, setPaletteVisible] = useState(false);
   const [exitDialogVisible, setExitDialogVisible] = useState(false);
-
   const listRef = useRef<FlatList>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(Date.now());
-
   const { bookmarks, toggleBookmark } = useBookmarks();
 
-  /* ---------------- FETCH QUESTIONS ---------------- */
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -86,7 +81,6 @@ const QuestionsScreen = ({ route }: any) => {
     fetchQuestions();
   }, [categoryId, testId]);
 
-  /* ---------------- TIMER ---------------- */
   useEffect(() => {
     if (!timerRunning) return;
 
@@ -95,6 +89,7 @@ const QuestionsScreen = ({ route }: any) => {
         if (prev <= 1) {
           clearInterval(timerRef.current!);
           setTimerRunning(false);
+          setTimeUp(true); // 👈 time up
           return 0;
         }
         return prev - 1;
@@ -112,7 +107,6 @@ const QuestionsScreen = ({ route }: any) => {
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   };
 
-  /* ---------------- OPTION SELECT ---------------- */
   const selectOption = (qIndex: number, optionIndex: number) => {
     setQuestions(prev =>
       prev.map((q, i) =>
@@ -144,7 +138,6 @@ const QuestionsScreen = ({ route }: any) => {
     );
   };
 
-  /* ---------------- RESULT LOGIC ---------------- */
   const calculateResult = (questions: QuestionWithAnswer[]) => {
     let correct = 0;
     let wrong = 0;
@@ -175,13 +168,9 @@ const QuestionsScreen = ({ route }: any) => {
     };
   };
 
-  /* ---------------- SUBMIT / EXIT ---------------- */
   const confirmExit = async () => {
     if (timerRef.current) clearInterval(timerRef.current);
-
     const result = calculateResult(questions);
-
-    // ✅ Store the score in Firestore
     try {
       const app = getApp();
       const db = getFirestore(app);
@@ -205,7 +194,7 @@ const QuestionsScreen = ({ route }: any) => {
                 timestamp: new Date(),
               },
             },
-            { merge: true }, // ✅ merge so we don’t overwrite other fields
+            { merge: true },
           );
       }
     } catch (err) {
@@ -229,20 +218,31 @@ const QuestionsScreen = ({ route }: any) => {
     });
   };
 
-  /* ---------------- BOOKMARK ---------------- */
   const handleBookmark = () => {
-    const question = questions[currentIndex];
-    toggleBookmark({ ...question, marked: !question.marked });
-
-    // local marked state update for ribbon
     setQuestions(prev =>
       prev.map((q, i) =>
         i === currentIndex ? { ...q, marked: !q.marked } : q,
       ),
     );
-  };
 
-  /* ---------------- RENDER QUESTION ---------------- */
+    setPalette(prev =>
+      prev.map((p, i) =>
+        i === currentIndex
+          ? {
+              ...p,
+              status:
+                p.status === 'markedForReview'
+                  ? qHasAnswer(currentIndex)
+                    ? 'answered'
+                    : 'notAnswered'
+                  : 'markedForReview',
+            }
+          : p,
+      ),
+    );
+  };
+  const qHasAnswer = (index: number) => questions[index]?.selected !== null;
+
   const renderItem = ({ item, index }: any) => {
     const options = [
       { key: 1, label: item.A },
@@ -271,7 +271,9 @@ const QuestionsScreen = ({ route }: any) => {
               ]}
               onPress={() => selectOption(index, opt.key)}
             >
-              <Text style={styles.optionText}>
+              <Text
+                style={[item.selected === opt.key && styles.selectedOption]}
+              >
                 {opt.key}. {opt.label}
               </Text>
             </TouchableOpacity>
@@ -289,7 +291,6 @@ const QuestionsScreen = ({ route }: any) => {
     );
   }
 
-  /* ---------------- UI ---------------- */
   return (
     <SafeAreaView style={styles.container}>
       <QuizTopHeader
@@ -309,28 +310,39 @@ const QuestionsScreen = ({ route }: any) => {
         onMenuPress={() => setPaletteVisible(true)}
       />
 
-      <FlatList
-        ref={listRef}
-        data={questions}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={item => item.id}
-        renderItem={renderItem}
-        onMomentumScrollEnd={e => {
-          const index = Math.round(e.nativeEvent.contentOffset.x / width);
-          setCurrentIndex(index);
+      {timeUp ? (
+        <View style={styles.timeUpContainer}>
+          <Text style={styles.timeUpText}>⏰ Time’s Up!</Text>
+          <CustomButton
+            title="View Results"
+            onPress={confirmExit}
+            loading={loading}
+            disabled={loading}
+          />
+        </View>
+      ) : (
+        <FlatList
+          ref={listRef}
+          data={questions}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={item => item.id}
+          renderItem={renderItem}
+          onMomentumScrollEnd={e => {
+            const index = Math.round(e.nativeEvent.contentOffset.x / width);
+            setCurrentIndex(index);
 
-          setPalette(prev =>
-            prev.map((p, i) =>
-              i === index && p.status === 'notVisited'
-                ? { ...p, status: 'notAnswered' }
-                : p,
-            ),
-          );
-        }}
-      />
-
+            setPalette(prev =>
+              prev.map((p, i) =>
+                i === index && p.status === 'notVisited'
+                  ? { ...p, status: 'notAnswered' }
+                  : p,
+              ),
+            );
+          }}
+        />
+      )}
       <CustomQuizBottomBar
         isFirst={currentIndex === 0}
         isLast={currentIndex === questions.length - 1}

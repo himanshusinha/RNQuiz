@@ -2,22 +2,18 @@ import React, { FC, useEffect, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-
 import CustomText from '../../../components/global/CustomText';
 import CustomInput from '../../../components/global/CustomInput';
 import CustomButton from '../../../components/global/CustomButton';
 import SocialButtonHorizontal from '../../../components/global/SocialButtonHorizontal';
 import CustomAuthNav from '../../../components/global/CustomAuthNav';
-
 import styles from './styles';
 import { isValidEmail } from '../../../utils/Validators';
 import { Colors } from '../../../constants/Colors';
 import GoogleIcon from '../../../assets/icons/google.png';
-
 import auth, { GoogleAuthProvider } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-
 import { RootStackParamList } from '../../../types/types';
 import CustomLoader from '../../../components/global/CustomLoader';
 

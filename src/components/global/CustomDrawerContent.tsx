@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { getApp } from '@react-native-firebase/app';
 import { getAuth } from '@react-native-firebase/auth';
-import { getFirestore } from '@react-native-firebase/firestore';
+import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
 
 import styles from './CustomDrawerContent.styles';
 import { Colors } from '../../constants/Colors';
@@ -42,10 +42,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
         if (user.displayName) {
           setUserName(user.displayName);
         } else {
-          const doc = await db.collection('users').doc(user.uid).get();
+          const userRef = doc(db, 'users', user.uid);
+          const docSnap = await getDoc(userRef);
 
-          if (doc.exists()) {
-            const data = doc.data();
+          if (docSnap.exists()) {
+            const data = docSnap.data();
             setUserName(data?.fullName || 'User');
           } else {
             setUserName('User');

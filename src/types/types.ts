@@ -3,7 +3,6 @@ import { NavigationProp, ParamListBase } from '@react-navigation/native';
 //NAVIGATION TYPES
 export type RootStackParamList = {
   Home: undefined;
-
   Categories: {
     category: Category;
   };
@@ -47,6 +46,7 @@ export type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;
   DrawerQuiz: undefined;
+  UpdateProfile: undefined;
   Profile: undefined;
 };
 
@@ -57,6 +57,7 @@ export type DrawerParamList = {
   Rules: undefined;
   Score: undefined;
   Settings: undefined;
+  Profile: undefined;
 };
 // CUSTOM HEADER
 export type CustomHeaderProps = {
@@ -149,4 +150,8 @@ export interface CategoryCardProps {
 export interface CategoriesItemProps {
   item: TestItem;
   category: Category;
+}
+export interface BookMarkItemProps {
+  item: QuestionWithAnswer;
+  index: number;
 }

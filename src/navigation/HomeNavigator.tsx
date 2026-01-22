@@ -2,11 +2,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import CustomHeader from '../components/global/CustomHeader';
 import CategoriesScreen from '../screens/categories/CategoriesScreen';
+import QuestionsScreen from '../screens/dashboard/questions/QuestionsScreen';
 import BottomNavigator from './BottomNavigator';
 import type { RootStackParamList } from '../types/types';
-import QuestionsScreen from '../screens/dashboard/questions/QuestionsScreen';
 import { AnswersScreen, ScoreScreen, StartScreen } from '../screens';
-import ProfileScreen from '../screens/dashboard/profile/ProfileScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

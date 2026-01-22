@@ -1,43 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  Alert,
-} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import styles from './styles';
 import { navigate } from '../../../utils/NavigationUtil';
 import { getApp } from '@react-native-firebase/app';
 import { getAuth } from '@react-native-firebase/auth';
-import { getFirestore } from '@react-native-firebase/firestore';
-import UserIcon from '../../../assets/icons/user.png';
 import { Colors } from '../../../constants/Colors';
+import { menuItems } from '../../../constants/Data';
 
 const SettingsScreen = () => {
-  const navigation = useNavigation();
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [userId, setUserId] = useState('');
-  const [photoURL, setPhotoURL] = useState<string | null>(null);
-  const [overallScore, setOverallScore] = useState(0);
-
-  // Menu items data
-  const menuItems = [
-    { icon: 'bookmark-outline', title: 'BookMark', screen: 'BookMark' },
-    { icon: 'person-outline', title: 'Profile', screen: 'Profile' },
-    {
-      icon: 'log-out-outline',
-      title: 'Logout',
-      screen: 'Logout',
-      danger: true,
-    },
-  ];
-
   const handleMenuPress = (screen: string) => {
     switch (screen) {
       case 'BookMark':
@@ -123,7 +94,7 @@ const MenuItem = ({
           {title}
         </Text>
       </View>
-      <Icon name="chevron-forward" size={20} color="#999" />
+      <Icon name="chevron-forward" size={20} color={Colors.white} />
     </TouchableOpacity>
   );
 };

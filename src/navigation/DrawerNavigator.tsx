@@ -6,7 +6,7 @@ import CustomDrawerContent from '../components/global/CustomDrawerContent';
 import HomeNavigator from './HomeNavigator';
 import { DrawerParamList } from '../types/types';
 import { BookmarkProvider } from '../context/BookMarkContext';
-import ProfileScreen from '../screens/dashboard/profile/ProfileScreen';
+import ProfileScreen from '../screens/dashboard/profile/UpdateProfileScreen';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 

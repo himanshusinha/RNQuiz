@@ -1,24 +1,25 @@
 import { StyleSheet } from 'react-native';
+import { Colors } from '../../../constants/Colors';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FB',
+    backgroundColor: Colors.white,
   },
 
   header: {
-    backgroundColor: '#1565C0',
+    backgroundColor: Colors.blue,
     paddingVertical: 14,
     alignItems: 'center',
   },
   headerTitle: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 18,
     fontWeight: '600',
   },
 
   profileCard: {
-    backgroundColor: '#1565C0',
+    backgroundColor: Colors.blue,
     margin: 16,
     borderRadius: 16,
     alignItems: 'center',
@@ -29,26 +30,26 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#4CAF50',
+    backgroundColor: Colors.green,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 28,
     fontWeight: '700',
   },
 
   name: {
     marginTop: 8,
-    color: '#fff',
+    color: Colors.white,
     fontSize: 16,
     fontWeight: '600',
   },
 
   statsRow: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 12,
     marginTop: 16,
     width: '40%',
@@ -61,22 +62,22 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: '#777',
+    color: Colors.gray,
   },
   statValue: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#000',
+    color: Colors.black,
     marginTop: 4,
   },
 
   divider: {
     width: 1,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: Colors.white,
   },
 
   menuCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     marginHorizontal: 16,
     borderRadius: 16,
     marginTop: 10,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: Colors.white,
   },
 
   menuLeft: {
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
   menuText: {
     marginLeft: 12,
     fontSize: 15,
-    color: '#000',
+    color: Colors.black,
   },
   profileContainer: {
     height: 140,

@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 60,
     marginHorizontal: 20,
-    backgroundColor: '#FAF9F6',
+    backgroundColor: Colors.white,
     borderRadius: 20,
     padding: 20,
     elevation: 5,

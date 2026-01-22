@@ -5,17 +5,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-  },
-  list: {
-    padding: 16,
-  },
-  bookMarkContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 100,
   },
-  bookMarkTitle: { textAlign: 'center', marginTop: 20 },
+  title: {
+    color: Colors.black,
+    fontSize: 24,
+    fontWeight: '700',
+  },
 });
-
 export default styles;

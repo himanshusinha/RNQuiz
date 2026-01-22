@@ -1,10 +1,10 @@
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Colors } from '../../../constants/Colors';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F5F9',
+    backgroundColor: Colors.white,
   },
 
   topHeader: {
@@ -15,11 +15,11 @@ const styles = StyleSheet.create({
     padding: 12,
   },
 
-  count: { color: '#fff', fontWeight: '600' },
-  timer: { color: '#fff', fontWeight: '600' },
+  count: { color: Colors.white, fontWeight: '600' },
+  timer: { color: Colors.white, fontWeight: '600' },
 
   submitBtn: {
-    backgroundColor: '#FFC107',
+    backgroundColor: Colors.orange,
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 6,
@@ -28,15 +28,13 @@ const styles = StyleSheet.create({
   submitText: { fontWeight: '700' },
 
   subjectBar: {
-    backgroundColor: '#0A2E8A',
+    backgroundColor: Colors.darkBlue,
     padding: 10,
   },
 
-  subjectText: { color: '#fff', fontWeight: '600' },
-
-  /* 🔑 THIS IS THE KEY */
+  subjectText: { color: Colors.white, fontWeight: '600' },
   content: {
-    flex: 1, // 👈 pushes bottom bar down
+    flex: 1,
     padding: 16,
   },
 
@@ -46,33 +44,33 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     padding: 20,
     backgroundColor: Colors.white,
+    borderWidth: 0.3,
+    borderColor: Colors.gray,
+    borderRadius: 12,
   },
 
   option: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginVertical: 6,
+    borderRadius: 6,
+    borderWidth: 0.3,
+    borderColor: Colors.gray,
+    backgroundColor: Colors.white,
   },
 
-  /* ✅ Selected option highlight */
   selectedOption: {
-    backgroundColor: '#E8F1FF',
-    borderColor: Colors.blue,
+    backgroundColor: Colors.green,
+    borderColor: Colors.green,
+    color: Colors.white,
   },
 
-  /* ✅ Filled radio when selected */
   radioSelected: {
     backgroundColor: Colors.blue,
   },
 
   optionText: { fontSize: 14 },
 
-  /* 🔻 Fixed Bottom Bar */
   bottomBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -84,30 +82,30 @@ const styles = StyleSheet.create({
   },
 
   navText: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 18,
   },
 
   actionBtn: {
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: Colors.white,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
 
   actionText: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 12,
   },
   questionBox: {
     width: '100%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
     elevation: 3, // Android shadow
-    shadowColor: '#000', // iOS shadow
+    shadowColor: Colors.black, // iOS shadow
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -122,24 +120,49 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
-  /* 🔴 MARKED Ribbon (Android style) */
   markedRibbon: {
     position: 'absolute',
-    top: 10,
-    right: 18,
+    top: 15,
+    right: 16,
     backgroundColor: Colors.error, // Android orange
     paddingHorizontal: 20,
     borderTopRightRadius: 12,
-    borderBottomLeftRadius: 8,
-    padding: 4,
+    borderBottomLeftRadius: 0,
+    padding: 2,
     zIndex: 10,
   },
 
   markedText: {
     color: Colors.white,
-    fontSize: 12,
+    fontSize: 9,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  questionNoTitle: { color: Colors.white, fontWeight: '600' },
+  heading: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  paletteItem: {
+    width: 48,
+    height: 48,
+    margin: 6,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timeUpContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  timeUpText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'red',
+    marginBottom: 20,
   },
 });
 export default styles;

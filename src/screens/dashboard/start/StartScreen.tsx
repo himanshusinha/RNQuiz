@@ -10,16 +10,13 @@ import CustomHeader from '../../../components/global/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
 
 const StartScreen = ({ route }: any) => {
-  const navigation = useNavigation<any>(); // ✅ IMPORTANT
-
+  const navigation = useNavigation<any>();
   const categoryFromParams = route.params?.category;
   const categoryId = route.params?.categoryId ?? categoryFromParams?.id;
-  const categoryName =
-    route.params?.categoryName ?? categoryFromParams?.name ?? '';
+  const categoryName = route.params?.categoryName ?? categoryFromParams?.name ?? '';
   const testNumber = route.params?.testNumber;
   const currentTestNo = Number(testNumber);
   const lastScore = route.params?.lastScore;
-
   const [loading, setLoading] = useState(true);
   const [testInfo, setTestInfo] = useState<any>(null);
   const [questionCount, setQuestionCount] = useState(0);
@@ -42,10 +39,8 @@ const StartScreen = ({ route }: any) => {
 
         const info = infoSnap.data();
         if (!info) return;
-
         setTestInfo(info);
         setTestTime(info[`TEST${currentTestNo}_TIME`] ?? 0);
-
         const testId = info[`TEST${currentTestNo}_ID`];
         if (!testId) return;
 
@@ -84,17 +79,13 @@ const StartScreen = ({ route }: any) => {
 
   return (
     <View style={styles.container}>
-      {/* ✅ FIXED HEADER */}
       <CustomHeader title={categoryName} navigation={navigation} showBack />
-
       <Text style={styles.testTitle}>Test No. {currentTestNo}</Text>
-
       <TestInfoCard
         bestScore={lastScore ?? 0}
         questionCount={questionCount}
         testTime={testTime}
       />
-
       <CustomButton
         containerStyle={styles.startButton}
         title={questionCount === 0 ? 'No Questions' : 'Start Quiz'}
